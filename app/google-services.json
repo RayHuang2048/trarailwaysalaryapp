@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "966078211903",
+    "project_id": "trarailwayaccidentreport",
+    "storage_bucket": "trarailwayaccidentreport.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966078211903:android:c38cf9c7e63dd63618158a",
+        "android_client_info": {
+          "package_name": "com.ray.trarailwaysalaryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXkLlfa1tRE7wklXWa9wHyAfoPpoAik0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

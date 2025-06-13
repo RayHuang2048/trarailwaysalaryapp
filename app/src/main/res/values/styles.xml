@@ -1,0 +1,6 @@
+<resources>
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/your_primary_color</item>
+        <item name="colorOnPrimary">@color/your_on_primary_color</item>
+    </style>
+</resources>

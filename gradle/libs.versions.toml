@@ -1,0 +1,74 @@
+# In gradle/libs.versions.toml
+
+[versions]
+# Android Gradle Plugin 和 Kotlin 版本
+agp = "8.2.0"
+kotlin = "1.9.23"
+
+# Jetpack Compose 相關版本
+composeBom = "2024.06.00" # Compose BOM 版本
+composeCompiler = "1.5.11" # 與 kotlin 版本相容
+
+# Material Design 庫版本 (給傳統 Android View 系統使用)
+material = "1.12.0" # 最新穩定版本
+
+# Hilt 依賴注入框架版本
+hilt = "2.51.1"
+
+# Firebase BOM 版本 (管理所有 Firebase 庫版本)
+firebaseBom = "33.0.0"
+
+# Apache POI 版本
+poi = "5.2.5" # Apache POI 最新穩定版本
+# 移除了 curvesapi 和 xmlbeans 的版本定義，因為通常會由 POI 自身拉取
+
+# Log4j 版本
+log4j = "2.23.1" # For log4j-api
+
+# 測試庫版本
+junit = "4.13.2"
+androidx-junit-ext = "1.1.5"
+espresso-core = "3.5.1"
+
+[libraries]
+# AndroidX 核心庫 - 不由 BOM 管理，需要指定版本
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.8.1" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" } # 由 composeBom 管理
+androidx-ui = { group = "androidx.compose.ui", name = "ui" } # 由 composeBom 管理
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" } # 由 composeBom 管理
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" } # 由 composeBom 管理
+
+# Jetpack Compose Material 3 (用於 Compose UI)
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" } # 由 composeBom 管理
+
+# 傳統 Android View System Material Design
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Compose BOM - 平台依賴
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+
+# Compose 測試庫
+junit = { group = "junit", name = "junit", version.ref = "junit" } # JUnit 4 不在 composeBom 管理範圍
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit-ext" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" } # 由 composeBom 管理
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" } # 由 composeBom 管理
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" } # 由 composeBom 管理
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx" } # 由 firebaseBom 管理
+
+# Hilt
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+# Apache POI (通常 poi-ooxml 會自動拉取所需的 xmlbeans 和 curvesapi)
+poi = { group = "org.apache.poi", name = "poi", version.ref = "poi" }
+poi-ooxml = { group = "org.apache.poi", name = "poi-ooxml", version.ref = "poi" }
+# 移除了 curvesapi 和 xmlbeans 的庫定義
+
+# Log4j
+log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j" }
+# 移除了 log4j-core 的庫定義

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">TRA Railway Salary App</string>
+    <string name="select_employee_type_prompt">選擇人員類型</string>
+    <string name="select_officer_position_prompt">選擇職員職位</string>
+    <string name="select_shift_type_prompt">選擇班別</string>
+
+    <string-array name="accident_types_array">
+        <item>請選擇事故類型</item>
+        <item>列車脫軌</item>
+        <item>列車撞擊</item>
+        <item>平交道事故</item>
+        <item>號誌故障</item>
+        <item>供電系統故障</item>
+        <item>土木結構損壞</item>
+        <item>侵入路線</item>
+        <item>火災</item>
+        <item>設備故障</item>
+        <item>其他</item>
+    </string-array>
+</resources>

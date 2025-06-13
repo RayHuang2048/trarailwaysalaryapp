@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 夜間模式對應 -->
+    <color name="md_theme_light_scrim">#FFFFFF</color>
+    <color name="md_theme_light_inverseSurface">#E6E1E5</color>
+    <color name="md_theme_light_inverseOnSurface">#313033</color>
+
+    <color name="md_theme_dark_primary">#D0BCFF</color>
+    <color name="md_theme_dark_onPrimary">#381E72</color>
+    <color name="md_theme_dark_surface">#1C1B1F</color>
+    <color name="md_theme_dark_onSurface">#E6E1E5</color>
+
+</resources>
