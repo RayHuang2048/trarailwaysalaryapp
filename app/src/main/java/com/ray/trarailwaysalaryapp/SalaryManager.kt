@@ -221,9 +221,10 @@ class SalaryManager(private val context: Context) {
         operatingPosition: OperatingPosition?,
         employeePosition: EmployeePosition?,
         shiftType: ShiftType,
-        overtimeHoursAB133: Double,
-        overtimeHoursAB166: Double,
-        holidayHoursAB: Double,
+        // AB班的加班時數修改為替三班一天天數和例假日國定假日加班天數
+        replaceThreeShiftDays: Double, // 替三班一天天數
+        holidayOvertimeDays: Double, // 例假日/國定假日加班天數
+        // 三班制的加班時數保持不變
         overtimeHoursThreeShift134: Double,
         overtimeHoursThreeShift167: Double,
         dayShiftDays: Int,
@@ -264,7 +265,7 @@ class SalaryManager(private val context: Context) {
                 dutySalaryAllowance = 0.0
 
                 // 職員的日薪和時薪計算 (主管加給重新計入)
-                val baseForDailyHourly = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance // <-- 主管加給重新計入
+                val baseForDailyHourly = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance
                 dailyWage = baseForDailyHourly / 30.0
                 hourlyWage = dailyWage / 8.0
             }
@@ -320,9 +321,8 @@ class SalaryManager(private val context: Context) {
 
         // 計算加班費
         var totalOvertimePayAB = 0.0
-        var overtimePayAB133 = 0.0
-        var overtimePayAB166 = 0.0
-        var holidayOvertimePayAB = 0.0
+        var replaceThreeShiftOvertimePay = 0.0 // 替三班一天加班費
+        var holidayOvertimePay = 0.0 // 例假日/國定假日加班費
 
         var totalOvertimePayThreeShift = 0.0
         var fixedThreeShiftOvertimePay = 0.0
@@ -332,11 +332,14 @@ class SalaryManager(private val context: Context) {
 
         when (shiftType) {
             ShiftType.AB_SHIFT -> {
-                overtimePayAB133 = hourlyWage * overtimeHoursAB133 * 1.33
-                overtimePayAB166 = hourlyWage * overtimeHoursAB166 * 1.66
-                holidayOvertimePayAB = hourlyWage * holidayHoursAB * 2.0
+                // 替三班一天加班費計算：每替一天，自動算兩小時1.33倍 + 一小時1.66倍
+                val payPerReplaceDay = (hourlyWage * 2 * 1.33) + (hourlyWage * 1 * 1.66)
+                replaceThreeShiftOvertimePay = payPerReplaceDay * replaceThreeShiftDays
 
-                totalOvertimePayAB = overtimePayAB133 + overtimePayAB166 + holidayOvertimePayAB
+                // 例假日/國定假日加班費：多一天薪水 (日薪 * 天數 * 1.0)
+                holidayOvertimePay = dailyWage * holidayOvertimeDays * 1.0 // <-- 計算變更，基於日薪一倍
+
+                totalOvertimePayAB = replaceThreeShiftOvertimePay + holidayOvertimePay
             }
             ShiftType.THREE_SHIFT -> {
                 val fixedOvertimeHours = 24.0
@@ -361,14 +364,13 @@ class SalaryManager(private val context: Context) {
             "hourlyWage" to hourlyWage,
             "dailyWage" to dailyWage,
             "totalOvertimePayAB" to totalOvertimePayAB,
-            "overtimePayAB133" to overtimePayAB133,
-            "overtimePayAB166" to overtimePayAB166,
-            "holidayOvertimePayAB" to holidayOvertimePayAB,
+            "replaceThreeShiftOvertimePay" to replaceThreeShiftOvertimePay, // 顯示替三班一天加班費
+            "holidayOvertimePay" to holidayOvertimePay, // 顯示例假日/國定假日加班費
             "totalOvertimePayThreeShift" to totalOvertimePayThreeShift,
             "fixedThreeShiftOvertimePay" to fixedThreeShiftOvertimePay,
             "totalNightShiftAllowance" to totalNightShiftAllowance,
             "overtimePayThreeShift134" to overtimePayThreeShift134,
-            "overtimePayThreeShift167" to overtimePayThreeShift167
+            "overtimePayThreeShift167" to overtimeHoursThreeShift167
         )
     }
 }
