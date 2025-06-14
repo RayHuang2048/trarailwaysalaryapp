@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/salaryCalculatorFragment"
+        android:icon="@drawable/ic_calculate_24dp"  android:title="薪資計算" />
+
+    <item
+        android:id="@+id/statusDisplayFragment"
+        android:icon="@drawable/ic_train_24dp"      android:title="營運狀態" />
+
+    <item
+        android:id="@+id/sponsorFragment"
+        android:icon="@android:drawable/ic_menu_info_details" android:title="贊助" />
+
+
+</menu>

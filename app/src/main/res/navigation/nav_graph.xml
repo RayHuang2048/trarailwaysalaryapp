@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/salaryCalculatorFragment">
+
+    <fragment
+        android:id="@+id/salaryCalculatorFragment"
+        android:name="com.ray.trarailwaysalaryapp.SalaryCalculatorFragment"
+        android:label="薪資計算"
+        tools:layout="@layout/fragment_salary_calculator" />
+    <fragment
+        android:id="@+id/statusDisplayFragment"
+        android:name="com.ray.trarailwaysalaryapp.StatusDisplayFragment"
+        android:label="營運狀態"
+        tools:layout="@layout/fragment_status_display" />
+    <fragment
+        android:id="@+id/sponsorFragment"
+        android:name="com.ray.trarailwaysalaryapp.SponsorFragment"
+        android:label="贊助"
+        tools:layout="@layout/fragment_sponsor" />
+</navigation>

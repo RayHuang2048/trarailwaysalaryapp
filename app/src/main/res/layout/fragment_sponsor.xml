@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="#FFDAB9" tools:context=".SponsorFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="這是贊助頁面 - 已載入！"
+        android:textSize="28sp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="贊助本應用程式"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="如果您覺得本應用程式對您有幫助，\n歡迎透過以下方式支持我們：\n\n- 透過 Google Play 贊助支持 (49元)\n- 推薦給您的朋友\n- 在應用商店留下好評\n\n您的支持是我們持續改進的動力！"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/buyAppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="贊助應用程式 (NT$49)"
+        android:padding="12dp"
+        android:textSize="18sp" />
+
+</LinearLayout>
