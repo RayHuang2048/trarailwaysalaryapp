@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="選擇人員類型:"
+            android:text="人員類型:"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -22,12 +23,13 @@
             android:id="@+id/personnelTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:entries="@array/personnel_types"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="選擇職員職位:"
+            android:text="職員職位:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -36,12 +38,13 @@
             android:id="@+id/officerPositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:entries="@array/officer_positions"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="選擇營運人員職位:"
+            android:text="營運人員職位:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -50,12 +53,13 @@
             android:id="@+id/operatingPositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:entries="@array/operating_positions"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="選擇從業人員職位:"
+            android:text="從業人員職位:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -64,12 +68,14 @@
             android:id="@+id/employeePositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:entries="@array/employee_positions"
             android:minHeight="48dp" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="輸入薪點:"
+            android:text="薪點:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -79,13 +85,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="薪點 (例如: 280)"
+            android:hint="輸入薪點"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="選擇班別類型:"
+            android:text="班別類型:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -94,12 +100,13 @@
             android:id="@+id/shiftTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:entries="@array/shift_types"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AB班 替三班一天 (天數):"
+            android:text="AB班 替三班一天天數:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -109,7 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:hint="輸入天數 (例如: 1.0)"
+            android:hint="天數 (例如: 0.5)"
             android:minHeight="48dp" />
 
         <TextView
@@ -125,46 +132,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:hint="例假日/國定假日加班天數 (例如: 1.0)"
-            android:minHeight="48dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="三班制 1.34倍加班時數:"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp" />
-
-        <EditText
-            android:id="@+id/overtimeHoursThreeShift134EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="時數 (例如: 4.0)"
+            android:hint="天數 (例如: 1.0)"
             android:minHeight="48dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="三班制 1.67倍加班時數:"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp" />
-
-        <EditText
-            android:id="@+id/overtimeHoursThreeShift167EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="時數 (例如: 2.0)"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="三班制 白班天數:"
+            android:text="三班制 日班天數:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -174,7 +148,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="天數 (例如: 10)"
+            android:hint="天數 (例如: 15)"
             android:minHeight="48dp" />
 
         <TextView
@@ -196,7 +170,55 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="三班制 夜班津貼(每日):"
+            android:text="三班制 休息日出勤天數:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/restDayOvertimeDaysEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="天數 (例如: 1.0)"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="三班制 國定假日出勤天數:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/nationalHolidayAttendanceDaysEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="天數 (例如: 1.0)"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="三班制 國定假日休班前一天接夜班天數:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/nationalHolidayEveNightShiftDaysEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="天數 (例如: 1.0)"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="夜班津貼每日金額:"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
@@ -206,24 +228,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:hint="每日津貼 (例如: 120.0)"
+            android:hint="金額 (例如: 100)"
             android:minHeight="48dp" />
+
 
         <Button
             android:id="@+id/calculateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="計算月薪"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:layout_marginTop="24dp"
+            android:padding="12dp" />
 
         <TextView
             android:id="@+id/resultTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="計算結果將顯示在這裡..."
-            android:textSize="18sp" />
+            android:layout_marginTop="24dp"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:padding="8dp"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"
+            android:scrollbars="vertical"
+            android:maxLines="20" />
 
     </LinearLayout>
+
 </ScrollView>

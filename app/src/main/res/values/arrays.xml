@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="personnel_types">
+        <item>職員</item>
+        <item>營運人員</item>
+        <item>從業人員</item>
+    </string-array>
+    <string-array name="officer_positions">
+        <item>站長</item>
+        <item>主任</item>
+        <item>副站長</item>
+        <item>副座列車長</item>
+        <item>行車人員員級</item>
+        <item>行車人員佐級</item>
+        <item>站務員</item>
+        <item>助理站務員</item>
+    </string-array>
+    <string-array name="operating_positions">
+        <item>營運員</item>
+        <item>服務員</item>
+        <item>司機員</item>
+        <item>列車長</item>
+        <item>領班</item>
+        <item>站務員</item>
+        <item>其他營運人員</item>
+    </string-array>
+    <string-array name="employee_positions">
+        <item>服務員</item>
+        <item>助理站務員</item>
+        <item>維修人員</item>
+        <item>清潔人員</item>
+        <item>售票員</item>
+        <item>其他從業人員</item>
+    </string-array>
+    <string-array name="shift_types">
+        <item>AB班</item>
+        <item>三班制</item>
+    </string-array>
+</resources>

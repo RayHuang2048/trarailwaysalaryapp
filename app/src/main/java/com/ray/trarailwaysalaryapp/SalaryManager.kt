@@ -223,12 +223,13 @@ class SalaryManager(private val context: Context) {
         shiftType: ShiftType,
         // AB班的加班時數修改為替三班一天天數和例假日國定假日加班天數
         replaceThreeShiftDays: Double, // 替三班一天天數
-        holidayOvertimeDays: Double, // 例假日/國定假日加班天數
-        // 三班制的加班時數保持不變
-        overtimeHoursThreeShift134: Double,
-        overtimeHoursThreeShift167: Double,
-        dayShiftDays: Int,
-        nightShiftDays: Int,
+        holidayOvertimeDays: Double, // AB班例假日/國定假日加班天數 (AB班用)
+        // 三班制的加班時數移除，只保留天數相關輸入
+        dayShiftDays: Int, // 日班天數
+        nightShiftDays: Int, // 夜班天數
+        restDayOvertimeDays: Double, // 休息日出勤天數
+        nationalHolidayAttendanceDays: Double, // 國定假日出勤天數 (三班制用)
+        nationalHolidayEveNightShiftDays: Double, // 國定假日休班前一天接夜班天數
         nightShiftAllowancePerDay: BigDecimal
     ): Map<String, Any>? {
 
@@ -322,13 +323,18 @@ class SalaryManager(private val context: Context) {
         // 計算加班費
         var totalOvertimePayAB = 0.0
         var replaceThreeShiftOvertimePay = 0.0 // 替三班一天加班費
-        var holidayOvertimePay = 0.0 // 例假日/國定假日加班費
+        var abClassHolidayOvertimePay = 0.0 // AB班 例假日/國定假日加班費
 
         var totalOvertimePayThreeShift = 0.0
-        var fixedThreeShiftOvertimePay = 0.0
+        var calculatedThreeShiftOvertimePay = 0.0 // 三班制基於天數計算的加班費
+        var restDayOvertimePay = 0.0 // 休息日加班費
+        var nationalHolidayOvertimePay = 0.0 // 國定假日出勤加班費 (三班制用)
+        var nationalHolidayEveNightShiftPay = 0.0 // 國定假日休班前一天接夜班加班費
         var totalNightShiftAllowance = BigDecimal.ZERO.toDouble()
-        var overtimePayThreeShift134 = 0.0
-        var overtimePayThreeShift167 = 0.0
+
+        var monthlyBaseSalary = 0.0 // 月基本薪資 (含本薪、專業加給、職務加給、主管加給、留才津貼)
+        var totalMonthlySalary = 0.0 // 這個月總薪資
+        var totalMonthlyOvertimePay = 0.0 // 這個月總加班費
 
         when (shiftType) {
             ShiftType.AB_SHIFT -> {
@@ -336,21 +342,39 @@ class SalaryManager(private val context: Context) {
                 val payPerReplaceDay = (hourlyWage * 2 * 1.33) + (hourlyWage * 1 * 1.66)
                 replaceThreeShiftOvertimePay = payPerReplaceDay * replaceThreeShiftDays
 
-                // 例假日/國定假日加班費：多一天薪水 (日薪 * 天數 * 1.0)
-                holidayOvertimePay = dailyWage * holidayOvertimeDays * 1.0 // <-- 計算變更，基於日薪一倍
+                // 例假日/國定假日加班費 (AB班)：多一天薪水 (日薪 * 天數 * 1.0)
+                abClassHolidayOvertimePay = dailyWage * holidayOvertimeDays * 1.0
 
-                totalOvertimePayAB = replaceThreeShiftOvertimePay + holidayOvertimePay
+                totalOvertimePayAB = replaceThreeShiftOvertimePay + abClassHolidayOvertimePay
+                totalMonthlyOvertimePay = totalOvertimePayAB // AB班的總加班費
+
+                monthlyBaseSalary = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance + dutySalaryAllowance + talentRetentionAllowance
+                totalMonthlySalary = monthlyBaseSalary + totalMonthlyOvertimePay + totalNightShiftAllowance // AB班沒有夜班津貼，但統一加上
             }
             ShiftType.THREE_SHIFT -> {
-                val fixedOvertimeHours = 24.0
-                fixedThreeShiftOvertimePay = hourlyWage * fixedOvertimeHours * 1.33
+                // 三班制排班加班費: 日班天數和夜班天數，一天算加班1.2小時，費率1.33倍
+                val totalShiftDays = dayShiftDays + nightShiftDays
+                calculatedThreeShiftOvertimePay = hourlyWage * totalShiftDays * 1.2 * 1.33
+
+                // 休息日出勤加班費計算：一天算加班11小時，前2小時1.33倍，中6小時1.66倍，後3小時2.66倍
+                val payPerRestDayOvertimeHour = (hourlyWage * 2 * 1.33) + (hourlyWage * 6 * 1.66) + (hourlyWage * 3 * 2.66)
+                restDayOvertimePay = payPerRestDayOvertimeHour * restDayOvertimeDays
+
+                // 國定假日出勤加班費計算：一天算加班9小時，前8小時1倍，中2小時1.33倍，後1小時1.66倍
+                val payPerNationalHolidayAttendanceHour = (hourlyWage * 8 * 1.0) + (hourlyWage * 2 * 1.33) + (hourlyWage * 1 * 1.66)
+                nationalHolidayOvertimePay = payPerNationalHolidayAttendanceHour * nationalHolidayAttendanceDays
+
+                // 國定假日休班前一天接夜班加班費：一天算加班8小時，1倍時薪
+                nationalHolidayEveNightShiftPay = hourlyWage * 8 * nationalHolidayEveNightShiftDays * 1.0
+
 
                 totalNightShiftAllowance = nightShiftAllowancePerDay.multiply(nightShiftDays.toBigDecimal()).toDouble()
 
-                overtimePayThreeShift134 = hourlyWage * overtimeHoursThreeShift134 * 1.34
-                overtimePayThreeShift167 = hourlyWage * overtimeHoursThreeShift167 * 1.67
+                totalOvertimePayThreeShift = calculatedThreeShiftOvertimePay + restDayOvertimePay + nationalHolidayOvertimePay + nationalHolidayEveNightShiftPay
+                totalMonthlyOvertimePay = totalOvertimePayThreeShift // 三班制的總加班費
 
-                totalOvertimePayThreeShift = fixedThreeShiftOvertimePay + overtimePayThreeShift134 + overtimePayThreeShift167
+                monthlyBaseSalary = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance + dutySalaryAllowance + talentRetentionAllowance
+                totalMonthlySalary = monthlyBaseSalary + totalMonthlyOvertimePay + totalNightShiftAllowance
             }
         }
 
@@ -365,12 +389,16 @@ class SalaryManager(private val context: Context) {
             "dailyWage" to dailyWage,
             "totalOvertimePayAB" to totalOvertimePayAB,
             "replaceThreeShiftOvertimePay" to replaceThreeShiftOvertimePay, // 顯示替三班一天加班費
-            "holidayOvertimePay" to holidayOvertimePay, // 顯示例假日/國定假日加班費
+            "holidayOvertimePay" to abClassHolidayOvertimePay, // 顯示AB班例假日/國定假日加班費
             "totalOvertimePayThreeShift" to totalOvertimePayThreeShift,
-            "fixedThreeShiftOvertimePay" to fixedThreeShiftOvertimePay,
+            "calculatedThreeShiftOvertimePay" to calculatedThreeShiftOvertimePay, // 三班制排班加班費
+            "restDayOvertimePay" to restDayOvertimePay, // 休息日加班費
+            "nationalHolidayOvertimePay" to nationalHolidayOvertimePay, // 國定假日出勤加班費
+            "nationalHolidayEveNightShiftPay" to nationalHolidayEveNightShiftPay, // 國定假日休班前一天接夜班加班費
             "totalNightShiftAllowance" to totalNightShiftAllowance,
-            "overtimePayThreeShift134" to overtimePayThreeShift134,
-            "overtimePayThreeShift167" to overtimeHoursThreeShift167
+            "monthlyBaseSalary" to monthlyBaseSalary, // 新增：月基本薪資
+            "totalMonthlyOvertimePay" to totalMonthlyOvertimePay, // 新增：這個月總加班費
+            "totalMonthlySalary" to totalMonthlySalary // 新增：這個月總薪資
         )
     }
 }

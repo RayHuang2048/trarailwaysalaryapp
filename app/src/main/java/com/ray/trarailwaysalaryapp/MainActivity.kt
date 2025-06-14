@@ -21,14 +21,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var employeePositionSpinner: Spinner
     private lateinit var gradeEditText: EditText
     private lateinit var shiftTypeSpinner: Spinner
-    // AB班新的輸入欄位
+    // AB班輸入欄位
     private lateinit var replaceThreeShiftDaysEditText: EditText // 替三班一天天數
-    private lateinit var holidayOvertimeDaysEditText: EditText // 例假日國定假日加班天數
-    // 三班制保持不變
-    private lateinit var overtimeHoursThreeShift134EditText: EditText
-    private lateinit var overtimeHoursThreeShift167EditText: EditText
+    private lateinit var holidayOvertimeDaysEditText: EditText // AB班 例假日國定假日加班天數
+    // 三班制輸入欄位
     private lateinit var dayShiftDaysEditText: EditText
     private lateinit var nightShiftDaysEditText: EditText
+    private lateinit var restDayOvertimeDaysEditText: EditText // 休息日出勤天數
+    private lateinit var nationalHolidayAttendanceDaysEditText: EditText // 國定假日出勤天數
+    private lateinit var nationalHolidayEveNightShiftDaysEditText: EditText // 國定假日休班前一天接夜班天數
     private lateinit var nightShiftAllowancePerDayEditText: EditText
     private lateinit var calculateButton: Button
     private lateinit var resultTextView: TextView
@@ -46,15 +47,15 @@ class MainActivity : AppCompatActivity() {
         employeePositionSpinner = findViewById(R.id.employeePositionSpinner)
         gradeEditText = findViewById(R.id.gradeEditText)
         shiftTypeSpinner = findViewById(R.id.shiftTypeSpinner)
-        // AB班新的輸入欄位初始化
-        replaceThreeShiftDaysEditText = findViewById(R.id.replaceThreeShiftDaysEditText) // <-- 新的 ID
+        // AB班輸入欄位初始化
+        replaceThreeShiftDaysEditText = findViewById(R.id.replaceThreeShiftDaysEditText)
         holidayOvertimeDaysEditText = findViewById(R.id.holidayOvertimeDaysEditText)
 
-
-        overtimeHoursThreeShift134EditText = findViewById(R.id.overtimeHoursThreeShift134EditText)
-        overtimeHoursThreeShift167EditText = findViewById(R.id.overtimeHoursThreeShift167EditText)
         dayShiftDaysEditText = findViewById(R.id.dayShiftDaysEditText)
         nightShiftDaysEditText = findViewById(R.id.nightShiftDaysEditText)
+        restDayOvertimeDaysEditText = findViewById(R.id.restDayOvertimeDaysEditText)
+        nationalHolidayAttendanceDaysEditText = findViewById(R.id.nationalHolidayAttendanceDaysEditText)
+        nationalHolidayEveNightShiftDaysEditText = findViewById(R.id.nationalHolidayEveNightShiftDaysEditText)
         nightShiftAllowancePerDayEditText = findViewById(R.id.nightShiftAllowancePerDayEditText)
         calculateButton = findViewById(R.id.calculateButton)
         resultTextView = findViewById(R.id.resultTextView)
@@ -130,15 +131,15 @@ class MainActivity : AppCompatActivity() {
 
         val shiftType = ShiftType.values()[shiftTypeSpinner.selectedItemPosition]
 
-        // 從新的輸入欄位獲取值
-        val replaceThreeShiftDays = replaceThreeShiftDaysEditText.text.toString().toDoubleOrNull() ?: 0.0 // <-- 使用新的參數名稱
+        // 從輸入欄位獲取值
+        val replaceThreeShiftDays = replaceThreeShiftDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
         val holidayOvertimeDays = holidayOvertimeDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
 
-        // 三班制時數保持不變
-        val overtimeHoursThreeShift134 = overtimeHoursThreeShift134EditText.text.toString().toDoubleOrNull() ?: 0.0
-        val overtimeHoursThreeShift167 = overtimeHoursThreeShift167EditText.text.toString().toDoubleOrNull() ?: 0.0
         val dayShiftDays = dayShiftDaysEditText.text.toString().toIntOrNull() ?: 0
         val nightShiftDays = nightShiftDaysEditText.text.toString().toIntOrNull() ?: 0
+        val restDayOvertimeDays = restDayOvertimeDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val nationalHolidayAttendanceDays = nationalHolidayAttendanceDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val nationalHolidayEveNightShiftDays = nationalHolidayEveNightShiftDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
         val nightShiftAllowancePerDay = nightShiftAllowancePerDayEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
 
         val salaryDetails = salaryManager.getSalary(
@@ -148,12 +149,13 @@ class MainActivity : AppCompatActivity() {
             operatingPosition,
             employeePosition,
             shiftType,
-            replaceThreeShiftDays, // 傳遞新的參數
+            replaceThreeShiftDays,
             holidayOvertimeDays,
-            overtimeHoursThreeShift134,
-            overtimeHoursThreeShift167,
             dayShiftDays,
             nightShiftDays,
+            restDayOvertimeDays,
+            nationalHolidayAttendanceDays,
+            nationalHolidayEveNightShiftDays,
             nightShiftAllowancePerDay
         )
 
@@ -172,14 +174,19 @@ class MainActivity : AppCompatActivity() {
             val dailyWage = salaryDetails["dailyWage"] as Double
 
             val totalOvertimePayAB = salaryDetails["totalOvertimePayAB"] as Double
-            val replaceThreeShiftOvertimePay = salaryDetails["replaceThreeShiftOvertimePay"] as Double // <-- 顯示替三班一天加班費
-            val holidayOvertimePay = salaryDetails["holidayOvertimePay"] as Double
+            val replaceThreeShiftOvertimePay = salaryDetails["replaceThreeShiftOvertimePay"] as Double
+            val abClassHolidayOvertimePay = salaryDetails["holidayOvertimePay"] as Double
 
             val totalOvertimePayThreeShift = salaryDetails["totalOvertimePayThreeShift"] as Double
-            val fixedThreeShiftOvertimePay = salaryDetails["fixedThreeShiftOvertimePay"] as Double // 確保這裡有顯示
+            val calculatedThreeShiftOvertimePay = salaryDetails["calculatedThreeShiftOvertimePay"] as Double
+            val restDayOvertimePay = salaryDetails["restDayOvertimePay"] as Double
+            val nationalHolidayOvertimePay = salaryDetails["nationalHolidayOvertimePay"] as Double
+            val nationalHolidayEveNightShiftPay = salaryDetails["nationalHolidayEveNightShiftPay"] as Double
             val totalNightShiftAllowance = salaryDetails["totalNightShiftAllowance"] as Double
-            val overtimePayThreeShift134 = salaryDetails["overtimePayThreeShift134"] as Double // 確保這裡有顯示
-            val overtimePayThreeShift167 = salaryDetails["overtimePayThreeShift167"] as Double // 確保這裡有顯示
+
+            val monthlyBaseSalary = salaryDetails["monthlyBaseSalary"] as Double
+            val totalMonthlyOvertimePay = salaryDetails["totalMonthlyOvertimePay"] as Double
+            val totalMonthlySalary = salaryDetails["totalMonthlySalary"] as Double // **這裡新增了獲取 totalMonthlySalary**
 
 
             val resultText = """
@@ -194,13 +201,19 @@ class MainActivity : AppCompatActivity() {
                 
                 AB班總加班費: ${"%.2f".format(totalOvertimePayAB)}
                 替三班一天加班費: ${"%.2f".format(replaceThreeShiftOvertimePay)}
-                例假日/國定假日加班費: ${"%.2f".format(holidayOvertimePay)}
+                AB班 例假日/國定假日加班費: ${"%.2f".format(abClassHolidayOvertimePay)}
                 
                 三班制總加班費: ${"%.2f".format(totalOvertimePayThreeShift)}
-                三班制固定加班費(24hr*1.33): ${"%.2f".format(fixedThreeShiftOvertimePay)}
-                三班制1.34倍加班費: ${"%.2f".format(overtimePayThreeShift134)}
-                三班制1.67倍加班費: ${"%.2f".format(overtimePayThreeShift167)}
+                三班制排班加班費(1.2hr*1.33x): ${"%.2f".format(calculatedThreeShiftOvertimePay)}
+                休息日加班費: ${"%.2f".format(restDayOvertimePay)}
+                國定假日出勤加班費: ${"%.2f".format(nationalHolidayOvertimePay)}
+                國定假日休班前一天接夜班加班費: ${"%.2f".format(nationalHolidayEveNightShiftPay)}
                 夜班津貼總額: ${"%.2f".format(totalNightShiftAllowance)}
+
+                ---
+                本月基本薪資 (含津貼): ${"%.2f".format(monthlyBaseSalary)}
+                **本月總加班費:** ${"%.2f".format(totalMonthlyOvertimePay)}
+                **本月總薪資 (基本薪+加班費+夜班津貼):** ${"%.2f".format(totalMonthlySalary)}
             """.trimIndent()
             resultTextView.text = resultText
         } else {
