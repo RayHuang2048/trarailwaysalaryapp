@@ -1,353 +1,284 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/personnelTypeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="薪點/薪級"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/et_grade"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="輸入薪點或薪級"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="人員類型"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/spinner_personnel_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_select_officer_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="職員職位"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <Spinner
-            android:id="@+id/spinner_officer_position"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_select_operating_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="營運人員職位"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <Spinner
-            android:id="@+id/spinner_operating_position"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_select_employee_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="從業人員職位"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <Spinner
-            android:id="@+id/spinner_employee_position"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="班別類型"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/spinner_shift_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_day_shift_days_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="日班天數 (月內)"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/et_day_shift_days_three_shift"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="輸入日班天數 (僅三班制)"
-            android:text="0"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_night_shift_days_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="夜班天數 (月內)"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/et_night_shift_days_three_shift"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="輸入夜班天數 (僅三班制)"
-            android:text="0"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_night_shift_allowance_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="每夜班津貼 (若無則輸入0)"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/et_night_shift_allowance_per_day"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入夜班津貼金額"
-            android:text="0"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_overtime_ab_133_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="AB班 1.33倍加班時數 (小時)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/et_overtime_hours_ab_133"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入加班時數"
-            android:text="0"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_overtime_ab_166_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="AB班 1.66倍加班時數 (小時)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/et_overtime_hours_ab_166"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入加班時數"
-            android:text="0"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_holiday_ab_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="AB班 例假日/國定假日加班時數 (小時)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/et_holiday_hours_ab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入加班時數"
-            android:text="0"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_overtime_three_shift_134_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="三班制 1.34倍額外加班時數 (小時)"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/et_overtime_hours_three_shift_134"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入額外加班時數"
-            android:text="0"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:id="@+id/tv_overtime_three_shift_167_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="三班制 1.67倍額外加班時數 (小時)"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/et_overtime_hours_three_shift_167"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="輸入額外加班時數"
-            android:text="0"
-            android:visibility="gone"
-            android:minHeight="48dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="24dp"
-            android:padding="8dp"
-            android:background="#E0E0E0"> <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Excel 資料載入與驗證"
-            android:textStyle="bold"
+            android:text="人員類型:"
             android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/btn_load_officer_excel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="載入 職員薪資 Excel"
-                android:textSize="12sp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
-            <TextView
-                android:id="@+id/tv_officer_excel_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="職員 Excel 資料將顯示在此處..."
-                android:textSize="10sp"
-                android:fontFamily="monospace"
-                android:padding="4dp"
-                android:background="#F0F0F0"
-                android:textColor="@android:color/black"
-                android:scrollbars="vertical"
-                android:maxLines="5"
-                android:ellipsize="end"
-                />
-
-            <Button
-                android:id="@+id/btn_load_operator_excel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="載入 營運人員薪資 Excel"
-                android:textSize="12sp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
-            <TextView
-                android:id="@+id/tv_operator_excel_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="營運人員 Excel 資料將顯示在此處..."
-                android:textSize="10sp"
-                android:fontFamily="monospace"
-                android:padding="4dp"
-                android:background="#F0F0F0"
-                android:textColor="@android:color/black"
-                android:scrollbars="vertical"
-                android:maxLines="5"
-                android:ellipsize="end"
-                />
-
-            <Button
-                android:id="@+id/btn_load_employee_excel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="載入 從業人員薪資 Excel"
-                android:textSize="12sp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
-            <TextView
-                android:id="@+id/tv_employee_excel_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="從業人員 Excel 資料將顯示在此處..."
-                android:textSize="10sp"
-                android:fontFamily="monospace"
-                android:padding="4dp"
-                android:background="#F0F0F0"
-                android:textColor="@android:color/black"
-                android:scrollbars="vertical"
-                android:maxLines="5"
-                android:ellipsize="end"
-                />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_calculate"
-            android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/personnelTypeSpinner"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="計算月薪" />
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/personnelTypeLabel"
+            app:layout_constraintTop_toTopOf="@id/personnelTypeLabel"
+            app:layout_constraintBottom_toBottomOf="@id/personnelTypeLabel"/>
 
         <TextView
-            android:id="@+id/tv_result"
-            android:layout_width="match_parent"
+            android:id="@+id/officerPositionLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="月薪總額: 0 元"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="職員職位:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/personnelTypeSpinner" />
+
+        <Spinner
+            android:id="@+id/officerPositionSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/officerPositionLabel"
+            app:layout_constraintTop_toTopOf="@id/officerPositionLabel"
+            app:layout_constraintBottom_toBottomOf="@id/officerPositionLabel"/>
+
+        <TextView
+            android:id="@+id/operatingPositionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="營運人員職位:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/officerPositionSpinner" />
+
+        <Spinner
+            android:id="@+id/operatingPositionSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/operatingPositionLabel"
+            app:layout_constraintTop_toTopOf="@id/operatingPositionLabel"
+            app:layout_constraintBottom_toBottomOf="@id/operatingPositionLabel"/>
+
+        <TextView
+            android:id="@+id/employeePositionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="從業人員職位:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/operatingPositionSpinner" />
+
+        <Spinner
+            android:id="@+id/employeePositionSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/employeePositionLabel"
+            app:layout_constraintTop_toTopOf="@id/employeePositionLabel"
+            app:layout_constraintBottom_toBottomOf="@id/employeePositionLabel"/>
+
+        <TextView
+            android:id="@+id/gradeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="薪點:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/employeePositionSpinner" />
+
+        <EditText
+            android:id="@+id/gradeEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="輸入薪點"
+            android:inputType="number"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/gradeLabel"
+            app:layout_constraintTop_toTopOf="@id/gradeLabel"
+            app:layout_constraintBottom_toBottomOf="@id/gradeLabel"/>
+
+        <TextView
+            android:id="@+id/shiftTypeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="班別類型:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gradeEditText" />
+
+        <Spinner
+            android:id="@+id/shiftTypeSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/shiftTypeLabel"
+            app:layout_constraintTop_toTopOf="@id/shiftTypeLabel"
+            app:layout_constraintBottom_toBottomOf="@id/shiftTypeLabel"/>
+
+        <TextView
+            android:id="@+id/overtimeABLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AB班加班時數:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/shiftTypeSpinner" />
+
+        <EditText
+            android:id="@+id/overtimeHoursAB133EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="1.33倍時數"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeABLabel"/>
+
+        <EditText
+            android:id="@+id/overtimeHoursAB166EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="1.66倍時數"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeHoursAB133EditText"/>
+
+        <EditText
+            android:id="@+id/holidayHoursABEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="假日加班時數"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeHoursAB166EditText"/>
+
+        <TextView
+            android:id="@+id/overtimeThreeShiftLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="三班制加班時數:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/holidayHoursABEditText" />
+
+        <EditText
+            android:id="@+id/overtimeHoursThreeShift134EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="1.34倍時數"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeThreeShiftLabel"/>
+
+        <EditText
+            android:id="@+id/overtimeHoursThreeShift167EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="1.67倍時數"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeHoursThreeShift134EditText"/>
+
+        <TextView
+            android:id="@+id/nightShiftLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="夜點費資訊:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overtimeHoursThreeShift167EditText" />
+
+        <EditText
+            android:id="@+id/dayShiftDaysEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="白班天數"
+            android:inputType="number"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nightShiftLabel"/>
+
+        <EditText
+            android:id="@+id/nightShiftDaysEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="夜班天數"
+            android:inputType="number"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dayShiftDaysEditText"/>
+
+        <EditText
+            android:id="@+id/nightShiftAllowancePerDayEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="單日夜點費"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nightShiftDaysEditText"/>
 
         <Button
-            android:id="@+id/btn_open_accident_report"
-            android:layout_width="match_parent"
+            android:id="@+id/calculateButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="計算月薪"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nightShiftAllowancePerDayEditText"/>
+
+        <TextView
+            android:id="@+id/resultTextView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="事故通報平台" />
+            android:text="計算結果將顯示在此"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/calculateButton" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

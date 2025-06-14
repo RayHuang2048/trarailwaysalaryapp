@@ -1,4 +1,3 @@
----
 package com.ray.trarailwaysalaryapp
 
 import android.content.Context
@@ -14,15 +13,16 @@ enum class PersonnelType(val displayName: String) {
     EMPLOYEE("從業人員")
 }
 
-// 職員的細分職位列舉 (更新：新增 professionalAllowanceIncrease 屬性)
-enum class OfficerPosition(val displayName: String, val professionalAllowanceIncrease: Double) {
-    STATION_MASTER("站長", 5820.0), // 專業加給增支數額
-    DIRECTOR("主任", 5250.0),
-    DEPUTY_TRAIN_CONDUCTOR("副座列車長", 5020.0),
-    TRAFFIC_STAFF_GRADE("行車人員員級", 5020.0), // 行車人員員級與副座列車長相同
-    TRAFFIC_STAFF_JUNIOR_GRADE("行車人員佐級", 4780.0),
-    STATION_ATTENDANT("站務員", 4440.0),
-    ASSISTANT_STATION_ATTENDANT("助理站務員", 4220.0)
+// 職員的細分職位列舉 (新增 additionalProfessionalAllowance 和 managerialAllowance 屬性)
+enum class OfficerPosition(val displayName: String, val additionalProfessionalAllowance: Double, val managerialAllowance: Double) {
+    STATION_MASTER("站長", 5820.0, 5960.0), // 站長主管加給 5960
+    DIRECTOR("主任", 5250.0, 3970.0), // 主任主管加給 3970
+    VICE_STATION_MASTER("副站長", 0.0, 3970.0), // 副站長，主管加給 3970。專業加給增支數額暫設為0，如果副站長有專業加給增支數額，請提供。
+    DEPUTY_TRAIN_CONDUCTOR("副座列車長", 5020.0, 0.0), // 無主管加給
+    TRAFFIC_STAFF_GRADE("行車人員員級", 5020.0, 0.0), // 無主管加給
+    TRAFFIC_STAFF_JUNIOR_GRADE("行車人員佐級", 4780.0, 0.0), // 無主管加給
+    STATION_ATTENDANT("站務員", 4440.0, 0.0), // 無主管加給
+    ASSISTANT_STATION_ATTENDANT("助理站務員", 4220.0, 0.0) // 無主管加給
 }
 
 // 營運人員職位列舉 (包含職務加給屬性)
@@ -36,10 +36,10 @@ enum class OperatingPosition(val displayName: String, val dutyAllowance: Double)
     OTHER("其他營運人員", 0.0)
 }
 
-// 從業人員職位列舉 (更新：新增職務加給屬性)
+// 從業人員職位列舉 (包含職務加給屬性)
 enum class EmployeePosition(val displayName: String, val dutyAllowance: Double) {
-    SERVICE_ATTENDANT("服務員", 3530.0), // 從業人員 - 服務員
-    ASSISTANT_STATION_ATTENDANT("助理站務員", 4090.0), // 從業人員 - 助理站務員
+    SERVICE_ATTENDANT("服務員", 3530.0),
+    ASSISTANT_STATION_ATTENDANT("助理站務員", 4090.0),
     MAINTENANCE_STAFF("維修人員", 0.0),
     CLEANING_STAFF("清潔人員", 0.0),
     TICKET_SELLER("售票員", 0.0),
@@ -60,10 +60,9 @@ class SalaryManager(private val context: Context) {
     private val EXCEL_FILE_EMPLOYEE = "從業人員待遇表(備查本).xlsx"
 
     // 儲存從 Excel 載入的薪資數據 (Map of Maps，以便查詢)
-    // 薪點 -> (薪額, 專業加給)
-    private val officerSalaryData = mutableMapOf<Int, Map<String, Double>>()
-    private val operatorSalaryData = mutableMapOf<Int, Map<String, Double>>()
-    private val employeeSalaryData = mutableMapOf<Int, Map<String, Double>>()
+    private val officerSalaryData = mutableMapOf<Int, Map<String, Double>>() // 薪點 -> (薪額, 專業加給)
+    private val operatorSalaryData = mutableMapOf<Int, Map<String, Double>>() // 薪點 -> (月支數額)
+    private val employeeSalaryData = mutableMapOf<Int, Map<String, Double>>() // 薪點 -> (基本薪)
 
     init {
         loadSalaryData()
@@ -77,16 +76,15 @@ class SalaryManager(private val context: Context) {
             // --- 讀取職員薪資表 (職員薪額及專業加給表.xlsx) ---
             context.assets.open(EXCEL_FILE_OFFICER).use { inputStream ->
                 val workbook = XSSFWorkbook(inputStream)
-                // 假設工作表名為 "Table1"
-                val sheet = workbook.getSheet("Table1") ?: workbook.getSheetAt(0) // 嘗試按名稱獲取，若無則取第一個工作表
+                val sheet = workbook.getSheet("Table1") ?: workbook.getSheetAt(0)
 
                 if (sheet == null) {
                     Log.e("SalaryManager", "職員薪資表: 未找到工作表 'Table1' 或第一個工作表為空。")
-                    return@use // 跳過此檔案的處理
+                    return@use
                 }
 
-                val startRow = 4 // Excel 行號 - 1 (因為 POI 是從 0 開始計數，第5列是索引4)
-                val endRow = 49 // Excel 行號 - 1 (第50列是索引49)
+                val startRow = 4 // Excel 第5列是索引4
+                val endRow = 49 // Excel 第50列是索引49
 
                 val gradeCol = 3 // D 欄是索引 3
                 val amountCol = 4 // E 欄是索引 4
@@ -95,45 +93,27 @@ class SalaryManager(private val context: Context) {
                 for (i in startRow..endRow) {
                     val row = sheet.getRow(i)
                     if (row == null) {
-                        Log.d("SalaryManager", "職員薪資表: 第 $i 行是空的，跳過。")
+                        Log.d("SalaryManager", "職員薪資表: 第 ${i + 1} 行是空的，跳過。")
                         continue
                     }
 
-                    // 讀取薪點 (D 欄)
                     val gradeCell = row.getCell(gradeCol)
-                    val grade = try {
-                        gradeCell?.numericCellValue?.toInt()
-                    } catch (e: Exception) {
-                        Log.w("SalaryManager", "職員薪資表: 無法解析第 $i 行 D 欄的薪點：${gradeCell?.stringCellValue ?: "空"}")
-                        null
-                    }
+                    val grade = try { gradeCell?.numericCellValue?.toInt() } catch (e: Exception) { null }
 
-                    // 讀取薪額 (E 欄)
                     val amountCell = row.getCell(amountCol)
-                    val amount = try {
-                        amountCell?.numericCellValue
-                    } catch (e: Exception) {
-                        Log.w("SalaryManager", "職員薪資表: 無法解析第 $i 行 E 欄的薪額：${amountCell?.stringCellValue ?: "空"}")
-                        null
-                    }
+                    val amount = try { amountCell?.numericCellValue } catch (e: Exception) { null }
 
-                    // 讀取專業加給 (F 欄)
                     val professionalAllowanceCell = row.getCell(professionalAllowanceCol)
-                    val professionalAllowance = try {
-                        professionalAllowanceCell?.numericCellValue
-                    } catch (e: Exception) {
-                        Log.w("SalaryManager", "職員薪資表: 無法解析第 $i 行 F 欄的專業加給：${professionalAllowanceCell?.stringCellValue ?: "空"}")
-                        null
-                    }
+                    val professionalAllowance = try { professionalAllowanceCell?.numericCellValue } catch (e: Exception) { null }
 
                     if (grade != null && amount != null && professionalAllowance != null) {
                         officerSalaryData[grade] = mapOf(
                             "amount" to amount,
-                            "" to professionalAllowance
+                            "professionalAllowance" to professionalAllowance
                         )
                         Log.d("SalaryManager", "載入職員薪資: 薪點=$grade, 薪額=$amount, 專業加給=$professionalAllowance")
                     } else {
-                        Log.w("SalaryManager", "職員薪資表: 第 $i 行數據不完整，跳過。薪點:$grade, 薪額:$amount, 專業加給:$professionalAllowance")
+                        Log.w("SalaryManager", "職員薪資表: 第 ${i + 1} 行數據不完整，跳過。薪點:$grade, 薪額:$amount, 專業加給:$professionalAllowance")
                     }
                 }
                 Log.d("SalaryManager", "職員薪資數據載入完成，共 ${officerSalaryData.size} 筆。")
@@ -142,17 +122,83 @@ class SalaryManager(private val context: Context) {
             // --- 讀取營運人員薪給表 (營運人員薪給表.xlsx) ---
             context.assets.open(EXCEL_FILE_OPERATOR).use { inputStream ->
                 val workbook = XSSFWorkbook(inputStream)
-                val sheet = workbook.getSheetAt(0) // 假設在第一個工作表
-                // TODO: 解析營運人員數據並存入 operatorSalaryData
-                Log.d("SalaryManager", "營運人員薪資表待實作載入邏輯。")
+                val sheet = workbook.getSheet("Table1") ?: workbook.getSheetAt(0)
+
+                if (sheet == null) {
+                    Log.e("SalaryManager", "營運人員薪資表: 未找到工作表 'Table1' 或第一個工作表為空。")
+                    return@use
+                }
+
+                val startRow = 3 // Excel 第4列是索引3
+                val endRow = 39 // Excel 第40列是索引39
+
+                val gradeCol = 3 // D 欄是索引 3
+                val amountCol = 4 // E 欄是索引 4
+
+                for (i in startRow..endRow) {
+                    val row = sheet.getRow(i)
+                    if (row == null) {
+                        Log.d("SalaryManager", "營運人員薪資表: 第 ${i + 1} 行是空的，跳過。")
+                        continue
+                    }
+
+                    val gradeCell = row.getCell(gradeCol)
+                    val grade = try { gradeCell?.numericCellValue?.toInt() } catch (e: Exception) { null }
+
+                    val amountCell = row.getCell(amountCol)
+                    val amount = try { amountCell?.numericCellValue } catch (e: Exception) { null }
+
+                    if (grade != null && amount != null) {
+                        operatorSalaryData[grade] = mapOf(
+                            "amount" to amount
+                        )
+                        Log.d("SalaryManager", "載入營運人員薪資: 薪點=$grade, 月支數額=$amount")
+                    } else {
+                        Log.w("SalaryManager", "營運人員薪資表: 第 ${i + 1} 行數據不完整，跳過。薪點:$grade, 月支數額:$amount")
+                    }
+                }
+                Log.d("SalaryManager", "營運人員薪資數據載入完成，共 ${operatorSalaryData.size} 筆。")
             }
 
             // --- 讀取從業人員待遇表 (從業人員待遇表(備查本).xlsx) ---
             context.assets.open(EXCEL_FILE_EMPLOYEE).use { inputStream ->
                 val workbook = XSSFWorkbook(inputStream)
-                val sheet = workbook.getSheetAt(0) // 假設在第一個工作表
-                // TODO: 解析從業人員數據並存入 employeeSalaryData
-                Log.d("SalaryManager", "從業人員待遇表待實作載入邏輯。")
+                val sheet = workbook.getSheet("Table1") ?: workbook.getSheetAt(0)
+
+                if (sheet == null) {
+                    Log.e("SalaryManager", "從業人員待遇表: 未找到工作表 'Table1' 或第一個工作表為空。")
+                    return@use
+                }
+
+                val startRow = 3 // Excel 第4列是索引3
+                val endRow = 48 // Excel 第49列是索引48
+
+                val gradeCol = 1 // B 欄是索引 1
+                val amountCol = 2 // C 欄是索引 2
+
+                for (i in startRow..endRow) {
+                    val row = sheet.getRow(i)
+                    if (row == null) {
+                        Log.d("SalaryManager", "從業人員待遇表: 第 ${i + 1} 行是空的，跳過。")
+                        continue
+                    }
+
+                    val gradeCell = row.getCell(gradeCol)
+                    val grade = try { gradeCell?.numericCellValue?.toInt() } catch (e: Exception) { null }
+
+                    val amountCell = row.getCell(amountCol)
+                    val amount = try { amountCell?.numericCellValue } catch (e: Exception) { null }
+
+                    if (grade != null && amount != null) {
+                        employeeSalaryData[grade] = mapOf(
+                            "amount" to amount
+                        )
+                        Log.d("SalaryManager", "載入從業人員薪資: 薪點=$grade, 薪額=$amount")
+                    } else {
+                        Log.w("SalaryManager", "從業人員待遇表: 第 ${i + 1} 行數據不完整，跳過。薪點:$grade, 薪額:$amount")
+                    }
+                }
+                Log.d("SalaryManager", "從業人員薪資數據載入完成，共 ${employeeSalaryData.size} 筆。")
             }
 
         } catch (e: IOException) {
@@ -164,7 +210,6 @@ class SalaryManager(private val context: Context) {
         }
     }
 
-
     /**
      * 根據輸入參數計算薪資。
      * 返回一個包含各種薪資組件的 Map。
@@ -172,7 +217,7 @@ class SalaryManager(private val context: Context) {
     fun getSalary(
         personnelType: PersonnelType,
         grade: Int,
-        officerPosition: OfficerPosition?,
+        officerPosition: OfficerPosition?, // 職員職位
         operatingPosition: OperatingPosition?,
         employeePosition: EmployeePosition?,
         shiftType: ShiftType,
@@ -187,7 +232,9 @@ class SalaryManager(private val context: Context) {
     ): Map<String, Any>? {
 
         var amount = 0.0 // 月支數額 / 基本薪
-        var professionalAllowance = 0.0 // 專業加給
+        var professionalAllowance = 0.0 // 專業加給 (僅職員使用，從 Excel 讀取)
+        var additionalProfessionalAllowance = 0.0 // 職員專業加給增支數額 (來自 OfficerPosition enum)
+        var managerialAllowance = 0.0 // 主管加給
         var dutySalaryAllowance = 0.0 // 職務薪津貼
         var talentRetentionAllowance = 0.0 // 留才職務津貼
         var hourlyWage = 0.0
@@ -195,70 +242,81 @@ class SalaryManager(private val context: Context) {
 
         when (personnelType) {
             PersonnelType.OFFICER -> {
-                // 從載入的數據中獲取薪資
                 val officerData = officerSalaryData[grade]
                 if (officerData != null) {
                     amount = officerData["amount"] ?: 0.0
-                    // 專業加給從 Excel 讀取
-                    professionalAllowance = officerData["professionalAllowance"] ?: 0.0
+                    professionalAllowance = officerData["professionalAllowance"] ?: 0.0 // 從 Excel 讀取專業加給
                 } else {
                     Log.w("SalaryManager", "職員薪資: 未找到薪點 $grade 的數據，使用預設值。")
-                    // 如果 Excel 中沒有找到，使用硬編碼預設值 (作為備用)
-                    // 注意：這些硬編碼值目前只包含基本薪額和專業加給，沒有包含額外的增支數額
-                    when (officerPosition) {
-                        OfficerPosition.STATION_MASTER -> { amount = 45000.0; professionalAllowance = 15000.0 }
-                        OfficerPosition.DIRECTOR -> { amount = 42000.0; professionalAllowance = 14000.0 }
-                        OfficerPosition.DEPUTY_TRAIN_CONDUCTOR -> { amount = 40000.0; professionalAllowance = 13000.0 }
-                        OfficerPosition.TRAFFIC_STAFF_GRADE -> { amount = 38000.0; professionalAllowance = 12000.0 }
-                        OfficerPosition.TRAFFIC_STAFF_JUNIOR_GRADE -> { amount = 36000.0; professionalAllowance = 11000.0 }
-                        OfficerPosition.STATION_ATTENDANT -> { amount = 35000.0; professionalAllowance = 10000.0 }
-                        OfficerPosition.ASSISTANT_STATION_ATTENDANT -> { amount = 32000.0; professionalAllowance = 9500.0 }
-                        else -> { /* 不處理，保持 0.0 */ }
-                    }
+                    amount = 32000.0
+                    professionalAllowance = 9500.0
                 }
 
-                // 根據職員職位，將「專業加給增支數額」加到專業加給中
-                professionalAllowance += officerPosition?.professionalAllowanceIncrease ?: 0.0
+                // 從選定的職員職位獲取專業加給增支數額
+                additionalProfessionalAllowance = officerPosition?.additionalProfessionalAllowance ?: 0.0
+                // 從選定的職員職位獲取主管加給
+                managerialAllowance = officerPosition?.managerialAllowance ?: 0.0
 
-                // 職務薪津貼和留才職務津貼目前還是硬編碼，需要確認這些是否在 Excel 裡面或者有其他規則
-                when (officerPosition) {
-                    OfficerPosition.STATION_MASTER -> { dutySalaryAllowance = 8000.0; talentRetentionAllowance = 5000.0 }
-                    OfficerPosition.DIRECTOR -> { dutySalaryAllowance = 7000.0; talentRetentionAllowance = 4000.0 }
-                    OfficerPosition.DEPUTY_TRAIN_CONDUCTOR -> { dutySalaryAllowance = 6000.0; talentRetentionAllowance = 3000.0 }
-                    OfficerPosition.TRAFFIC_STAFF_GRADE -> { dutySalaryAllowance = 5000.0; talentRetentionAllowance = 2500.0 }
-                    OfficerPosition.TRAFFIC_STAFF_JUNIOR_GRADE -> { dutySalaryAllowance = 4000.0; talentRetentionAllowance = 2000.0 }
-                    OfficerPosition.STATION_ATTENDANT -> { dutySalaryAllowance = 3000.0; talentRetentionAllowance = 1500.0 }
-                    OfficerPosition.ASSISTANT_STATION_ATTENDANT -> { dutySalaryAllowance = 2500.0; talentRetentionAllowance = 1200.0 }
-                    else -> { /* 保持 0.0 */ }
-                }
+                // 統一設定職員的留才津貼為 2000 元
+                talentRetentionAllowance = 2000.0
 
-                // 職員的時薪計算
-                hourlyWage = (amount + professionalAllowance + dutySalaryAllowance) / 160.0
-                // 職員的日薪計算 (假設每月 20 天工作日)
-                dailyWage = (amount + professionalAllowance + dutySalaryAllowance) / 20.0
+                // 職員的職務薪津貼明確設為 0
+                dutySalaryAllowance = 0.0
+
+                // 職員的日薪和時薪計算 (主管加給重新計入)
+                val baseForDailyHourly = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance // <-- 主管加給重新計入
+                dailyWage = baseForDailyHourly / 30.0
+                hourlyWage = dailyWage / 8.0
             }
             PersonnelType.OPERATOR -> {
-                // TODO: 這裡未來會從 operatorSalaryData 查詢
-                amount = 30000.0 + grade * 100.0 // 假設基本薪隨薪級增加
-                professionalAllowance = 8000.0 + grade * 50.0
-                talentRetentionAllowance = 1000.0 + grade * 20.0
+                // 營運人員的計算邏輯
+                val operatorData = operatorSalaryData[grade]
+                if (operatorData != null) {
+                    amount = operatorData["amount"] ?: 0.0
+                } else {
+                    Log.w("SalaryManager", "營運人員薪資: 未找到薪點 $grade 的數據，使用預設值。")
+                    amount = 30000.0 // 預設值
+                }
+
+                // 營運人員沒有專業加給，明確設為 0
+                professionalAllowance = 0.0
+
+                // 營運人員的職務津貼從 OperatingPosition enum 獲取
                 dutySalaryAllowance = operatingPosition?.dutyAllowance ?: 0.0
 
-                hourlyWage = (amount + professionalAllowance + dutySalaryAllowance) / 168.0
-                dailyWage = (amount + professionalAllowance + dutySalaryAllowance) / 21.0
+                // 營運人員的留才津貼為 2000 (硬編碼)
+                talentRetentionAllowance = 2000.0
+
+                // 營運人員的日薪和時薪計算：(月支數額 + 職務薪) / 30 為日薪，再除以 8 為時薪
+                val baseForDailyHourly = amount + dutySalaryAllowance
+                dailyWage = baseForDailyHourly / 30.0
+                hourlyWage = dailyWage / 8.0
             }
             PersonnelType.EMPLOYEE -> {
-                // TODO: 這裡未來會從 employeeSalaryData 查詢
-                amount = 28000.0 + grade * 80.0
-                professionalAllowance = 7000.0 + grade * 40.0
-                talentRetentionAllowance = 0.0 // 從業人員沒有留才職務津貼
+                // 從業人員的計算邏輯
+                val employeeData = employeeSalaryData[grade]
+                if (employeeData != null) {
+                    amount = employeeData["amount"] ?: 0.0
+                } else {
+                    Log.w("SalaryManager", "從業人員薪資: 未找到薪點 $grade 的數據，使用預設值。")
+                    amount = 28000.0 // 預設值
+                }
+
+                // 從業人員沒有專業加給，明確設為 0
+                professionalAllowance = 0.0
+
+                // 從業人員的留才職務津貼為 0 (硬編碼，若有變更請告知)
+                talentRetentionAllowance = 0.0
+
+                // 從業人員的職務津貼從 EmployeePosition enum 獲取
                 dutySalaryAllowance = employeePosition?.dutyAllowance ?: 0.0
 
-                hourlyWage = (amount + professionalAllowance + dutySalaryAllowance) / 176.0
-                dailyWage = (amount + professionalAllowance + dutySalaryAllowance) / 22.0
+                // 從業人員的日薪和時薪計算：(薪額 + 職務薪) / 30 為日薪，再除以 8 為時薪
+                val baseForDailyHourly = amount + dutySalaryAllowance
+                dailyWage = baseForDailyHourly / 30.0
+                hourlyWage = dailyWage / 8.0
             }
         }
-
 
         // 計算加班費
         var totalOvertimePayAB = 0.0
@@ -296,6 +354,8 @@ class SalaryManager(private val context: Context) {
         return mapOf(
             "amount" to amount,
             "professionalAllowance" to professionalAllowance,
+            "additionalProfessionalAllowance" to additionalProfessionalAllowance,
+            "managerialAllowance" to managerialAllowance,
             "dutySalaryAllowance" to dutySalaryAllowance,
             "talentRetentionAllowance" to talentRetentionAllowance,
             "hourlyWage" to hourlyWage,
