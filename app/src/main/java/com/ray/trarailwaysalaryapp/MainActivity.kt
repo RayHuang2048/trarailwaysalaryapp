@@ -1,5 +1,6 @@
 package com.ray.trarailwaysalaryapp
 
+import android.content.Intent // 新增：引入 Intent 類別
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -9,8 +10,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.math.BigDecimal
 import android.view.View
-import android.webkit.WebView // 新增：引入 WebView 類別
-import android.webkit.WebViewClient // 新增：引入 WebViewClient 類別
+// 移除 WebView 相關的 import，因為它將在 WebViewActivity 中使用
+// import android.webkit.WebView
+// import android.webkit.WebViewClient
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var calculateButton: Button
     private lateinit var resultTextView: TextView
 
-    // 新增：WebView 宣告
-    private lateinit var webViewStatus: WebView
+    // 新增：查看營運狀態按鈕
+    private lateinit var viewStatusButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,15 +67,10 @@ class MainActivity : AppCompatActivity() {
         calculateButton = findViewById(R.id.calculateButton)
         resultTextView = findViewById(R.id.resultTextView)
 
-        // 新增：WebView 初始化和設定
-        webViewStatus = findViewById(R.id.webViewStatus)
-        webViewStatus.webViewClient = WebViewClient() // 確保在應用程式內打開連結，而不是跳轉到外部瀏覽器
-        webViewStatus.settings.javaScriptEnabled = true // 啟用 JavaScript，因為許多網頁內容是透過 JS 載入的
-        // 載入台鐵營運狀態網頁
-        webViewStatus.loadUrl("https://www.railway.gov.tw/tra-tip-web/tip/tip007/tip711/blockList")
+        // 初始化查看營運狀態按鈕
+        viewStatusButton = findViewById(R.id.viewStatusButton) // 請確保 activity_main.xml 中有這個按鈕
 
-
-        // Setup Spinners
+        // 設定 Spinner
         setupPersonnelTypeSpinner()
         setupOfficerPositionSpinner()
         setupOperatingPositionSpinner()
@@ -82,6 +79,12 @@ class MainActivity : AppCompatActivity() {
 
         calculateButton.setOnClickListener {
             calculateSalary()
+        }
+
+        // 設定查看營運狀態按鈕的點擊事件
+        viewStatusButton.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.ray.trarailwaysalaryapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 10
-        versionName = "1.0.9"
+        targetSdk = 35
+        versionCode = 11
+        versionName = "1.0.10"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -53,6 +53,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.6.7")
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
 
     implementation("androidx.appcompat:appcompat:1.6.1")

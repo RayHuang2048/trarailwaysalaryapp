@@ -29,6 +29,9 @@ log4j = "2.23.1" # For log4j-api
 junit = "4.13.2"
 androidx-junit-ext = "1.1.5"
 espresso-core = "3.5.1"
+appcompat = "1.7.1"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
 
 [libraries]
 # AndroidX 核心庫 - 不由 BOM 管理，需要指定版本
@@ -71,4 +74,8 @@ poi-ooxml = { group = "org.apache.poi", name = "poi-ooxml", version.ref = "poi" 
 
 # Log4j
 log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+[plugins]
 # 移除了 log4j-core 的庫定義

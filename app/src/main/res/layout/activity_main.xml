@@ -36,7 +36,7 @@
 
         <Spinner
             android:id="@+id/officerPositionSpinner"
-            android:layout_width="match_parent"
+            android:layout_width="match_content"
             android:layout_height="wrap_content"
             android:entries="@array/officer_positions"
             android:minHeight="48dp" />
@@ -255,18 +255,14 @@
             android:maxLines="20" />
 
         ---
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="台鐵營運狀態:"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp" />
-
-        <WebView
-            android:id="@+id/webViewStatus"
+        <Button
+            android:id="@+id/viewStatusButton"
             android:layout_width="match_parent"
-            android:layout_height="400dp" android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content"
+            android:text="查看台鐵營運狀態"
+            android:textSize="20sp"
+            android:layout_marginTop="24dp"
+            android:padding="12dp" />
 
     </LinearLayout>
 
