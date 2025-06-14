@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.math.BigDecimal
 import android.view.View
+import android.webkit.WebView // 新增：引入 WebView 類別
+import android.webkit.WebViewClient // 新增：引入 WebViewClient 類別
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nightShiftAllowancePerDayEditText: EditText
     private lateinit var calculateButton: Button
     private lateinit var resultTextView: TextView
+
+    // 新增：WebView 宣告
+    private lateinit var webViewStatus: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +64,14 @@ class MainActivity : AppCompatActivity() {
         nightShiftAllowancePerDayEditText = findViewById(R.id.nightShiftAllowancePerDayEditText)
         calculateButton = findViewById(R.id.calculateButton)
         resultTextView = findViewById(R.id.resultTextView)
+
+        // 新增：WebView 初始化和設定
+        webViewStatus = findViewById(R.id.webViewStatus)
+        webViewStatus.webViewClient = WebViewClient() // 確保在應用程式內打開連結，而不是跳轉到外部瀏覽器
+        webViewStatus.settings.javaScriptEnabled = true // 啟用 JavaScript，因為許多網頁內容是透過 JS 載入的
+        // 載入台鐵營運狀態網頁
+        webViewStatus.loadUrl("https://www.railway.gov.tw/tra-tip-web/tip/tip007/tip711/blockList")
+
 
         // Setup Spinners
         setupPersonnelTypeSpinner()
@@ -186,7 +199,7 @@ class MainActivity : AppCompatActivity() {
 
             val monthlyBaseSalary = salaryDetails["monthlyBaseSalary"] as Double
             val totalMonthlyOvertimePay = salaryDetails["totalMonthlyOvertimePay"] as Double
-            val totalMonthlySalary = salaryDetails["totalMonthlySalary"] as Double // **這裡新增了獲取 totalMonthlySalary**
+            val totalMonthlySalary = salaryDetails["totalMonthlySalary"] as Double
 
 
             val resultText = """
