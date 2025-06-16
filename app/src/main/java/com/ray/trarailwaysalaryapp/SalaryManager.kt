@@ -64,6 +64,9 @@ class SalaryManager(private val context: Context) {
     private val operatorSalaryData = mutableMapOf<Int, Map<String, Double>>() // 薪點 -> (月支數額)
     private val employeeSalaryData = mutableMapOf<Int, Map<String, Double>>() // 薪點 -> (基本薪)
 
+    // 夜點費常數的預設值
+    private val DEFAULT_NIGHT_SHIFT_ALLOWANCE_PER_DAY = 120.0
+
     init {
         loadSalaryData()
     }
@@ -230,7 +233,7 @@ class SalaryManager(private val context: Context) {
         restDayOvertimeDays: Double, // 休息日出勤天數
         nationalHolidayAttendanceDays: Double, // 國定假日出勤天數 (三班制用)
         nationalHolidayEveNightShiftDays: Double, // 國定假日休班前一天接夜班天數
-        nightShiftAllowancePerDay: BigDecimal
+        nightShiftAllowancePerDay: BigDecimal // 從外部傳入的每日夜點費
     ): Map<String, Any>? {
 
         var amount = 0.0 // 月支數額 / 基本薪
@@ -241,6 +244,19 @@ class SalaryManager(private val context: Context) {
         var talentRetentionAllowance = 0.0 // 留才職務津貼
         var hourlyWage = 0.0
         var dailyWage = 0.0
+
+        // 計算夜點費，並判斷實際每日夜點費金額
+        val actualNightShiftAllowancePerDay = if (nightShiftAllowancePerDay.compareTo(BigDecimal.ZERO) == 0) {
+            BigDecimal(DEFAULT_NIGHT_SHIFT_ALLOWANCE_PER_DAY)
+        } else {
+            nightShiftAllowancePerDay
+        }
+        val totalNightShiftAllowance = actualNightShiftAllowancePerDay.multiply(nightShiftDays.toBigDecimal()).toDouble()
+        Log.d("SalaryManager", "${personnelType.displayName} 夜點費計算: 天數=$nightShiftDays, 每日津貼=$actualNightShiftAllowancePerDay, 總額=$totalNightShiftAllowance")
+
+
+        // Base salary calculation without considering night shift allowance yet
+        var baseForHourlyCalculation = 0.0 // 用於時薪計算的基礎
 
         when (personnelType) {
             PersonnelType.OFFICER -> {
@@ -254,73 +270,63 @@ class SalaryManager(private val context: Context) {
                     professionalAllowance = 9500.0
                 }
 
-                // 從選定的職員職位獲取專業加給增支數額
                 additionalProfessionalAllowance = officerPosition?.additionalProfessionalAllowance ?: 0.0
-                // 從選定的職員職位獲取主管加給
                 managerialAllowance = officerPosition?.managerialAllowance ?: 0.0
-
-                // 統一設定職員的留才津貼為 2000 元
                 talentRetentionAllowance = 2000.0
-
-                // 職員的職務薪津貼明確設為 0
                 dutySalaryAllowance = 0.0
 
-                // 職員的日薪和時薪計算 (主管加給重新計入)
-                val baseForDailyHourly = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance
-                dailyWage = baseForDailyHourly / 30.0
+                // 職員的時薪計算基礎不包含夜點費
+                baseForHourlyCalculation = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance
+
+                dailyWage = baseForHourlyCalculation / 30.0
                 hourlyWage = dailyWage / 8.0
             }
             PersonnelType.OPERATOR -> {
-                // 營運人員的計算邏輯
                 val operatorData = operatorSalaryData[grade]
                 if (operatorData != null) {
                     amount = operatorData["amount"] ?: 0.0
                 } else {
                     Log.w("SalaryManager", "營運人員薪資: 未找到薪點 $grade 的數據，使用預設值。")
-                    amount = 30000.0 // 預設值
+                    amount = 30000.0
                 }
 
-                // 營運人員沒有專業加給，明確設為 0
                 professionalAllowance = 0.0
-
-                // 營運人員的職務津貼從 OperatingPosition enum 獲取
                 dutySalaryAllowance = operatingPosition?.dutyAllowance ?: 0.0
-
-                // 營運人員的留才津貼為 2000 (硬編碼)
                 talentRetentionAllowance = 2000.0
 
-                // 營運人員的日薪和時薪計算：(月支數額 + 職務薪) / 30 為日薪，再除以 8 為時薪
-                val baseForDailyHourly = amount + dutySalaryAllowance
-                dailyWage = baseForDailyHourly / 30.0
+                // 營運人員的時薪計算基礎「包含」夜點費
+                // 夜點費視為額外收入，平均分攤到每天工時中，以影響時薪基礎
+                // 假設一個月30天，每天8小時
+                val monthlyNightShiftContribution = totalNightShiftAllowance
+                baseForHourlyCalculation = amount + dutySalaryAllowance + monthlyNightShiftContribution
+
+                dailyWage = baseForHourlyCalculation / 30.0
                 hourlyWage = dailyWage / 8.0
             }
             PersonnelType.EMPLOYEE -> {
-                // 從業人員的計算邏輯
                 val employeeData = employeeSalaryData[grade]
                 if (employeeData != null) {
                     amount = employeeData["amount"] ?: 0.0
                 } else {
                     Log.w("SalaryManager", "從業人員薪資: 未找到薪點 $grade 的數據，使用預設值。")
-                    amount = 28000.0 // 預設值
+                    amount = 28000.0
                 }
 
-                // 從業人員沒有專業加給，明確設為 0
                 professionalAllowance = 0.0
-
-                // 從業人員的留才職務津貼為 0 (硬編碼，若有變更請告知)
                 talentRetentionAllowance = 0.0
-
-                // 從業人員的職務津貼從 EmployeePosition enum 獲取
                 dutySalaryAllowance = employeePosition?.dutyAllowance ?: 0.0
 
-                // 從業人員的日薪和時薪計算：(薪額 + 職務薪) / 30 為日薪，再除以 8 為時薪
-                val baseForDailyHourly = amount + dutySalaryAllowance
-                dailyWage = baseForDailyHourly / 30.0
+                // 從業人員的時薪計算基礎「包含」夜點費
+                // 假設一個月30天，每天8小時
+                val monthlyNightShiftContribution = totalNightShiftAllowance
+                baseForHourlyCalculation = amount + dutySalaryAllowance + monthlyNightShiftContribution
+
+                dailyWage = baseForHourlyCalculation / 30.0
                 hourlyWage = dailyWage / 8.0
             }
         }
 
-        // 計算加班費
+        // 計算加班費的相關變數初始化
         var totalOvertimePayAB = 0.0
         var replaceThreeShiftOvertimePay = 0.0 // 替三班一天加班費
         var abClassHolidayOvertimePay = 0.0 // AB班 例假日/國定假日加班費
@@ -330,12 +336,8 @@ class SalaryManager(private val context: Context) {
         var restDayOvertimePay = 0.0 // 休息日加班費
         var nationalHolidayOvertimePay = 0.0 // 國定假日出勤加班費 (三班制用)
         var nationalHolidayEveNightShiftPay = 0.0 // 國定假日休班前一天接夜班加班費
-        var totalNightShiftAllowance = BigDecimal.ZERO.toDouble()
 
-        var monthlyBaseSalary = 0.0 // 月基本薪資 (含本薪、專業加給、職務加給、主管加給、留才津貼)
-        var totalMonthlySalary = 0.0 // 這個月總薪資
-        var totalMonthlyOvertimePay = 0.0 // 這個月總加班費
-
+        // 根據班別類型計算加班費
         when (shiftType) {
             ShiftType.AB_SHIFT -> {
                 // 替三班一天加班費計算：每替一天，自動算兩小時1.33倍 + 一小時1.66倍
@@ -346,10 +348,6 @@ class SalaryManager(private val context: Context) {
                 abClassHolidayOvertimePay = dailyWage * holidayOvertimeDays * 1.0
 
                 totalOvertimePayAB = replaceThreeShiftOvertimePay + abClassHolidayOvertimePay
-                totalMonthlyOvertimePay = totalOvertimePayAB // AB班的總加班費
-
-                monthlyBaseSalary = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance + dutySalaryAllowance + talentRetentionAllowance
-                totalMonthlySalary = monthlyBaseSalary + totalMonthlyOvertimePay + totalNightShiftAllowance // AB班沒有夜班津貼，但統一加上
             }
             ShiftType.THREE_SHIFT -> {
                 // 三班制排班加班費: 日班天數和夜班天數，一天算加班1.2小時，費率1.33倍
@@ -367,16 +365,27 @@ class SalaryManager(private val context: Context) {
                 // 國定假日休班前一天接夜班加班費：一天算加班8小時，1倍時薪
                 nationalHolidayEveNightShiftPay = hourlyWage * 8 * nationalHolidayEveNightShiftDays * 1.0
 
-
-                totalNightShiftAllowance = nightShiftAllowancePerDay.multiply(nightShiftDays.toBigDecimal()).toDouble()
-
                 totalOvertimePayThreeShift = calculatedThreeShiftOvertimePay + restDayOvertimePay + nationalHolidayOvertimePay + nationalHolidayEveNightShiftPay
-                totalMonthlyOvertimePay = totalOvertimePayThreeShift // 三班制的總加班費
-
-                monthlyBaseSalary = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance + dutySalaryAllowance + talentRetentionAllowance
-                totalMonthlySalary = monthlyBaseSalary + totalMonthlyOvertimePay + totalNightShiftAllowance
             }
         }
+
+        // 計算本月基本薪資 (含本薪、專業加給、職務加給、主管加給、留才津貼)
+        // 職員的夜點費是「津貼」性質，直接加到總月薪
+        // 營運人員/從業人員的夜點費已經計入時薪計算基礎，不重複加
+        val monthlyBaseSalary = amount + professionalAllowance + additionalProfessionalAllowance + managerialAllowance + dutySalaryAllowance + talentRetentionAllowance
+
+        // 計算本月總加班費 (AB班和三班制的加班費加總)
+        val totalMonthlyOvertimePay = totalOvertimePayAB + totalOvertimePayThreeShift
+
+        // 計算最終總月薪
+        // 職員的夜點費總額單獨加計
+        val finalMonthlySalaryIncludingNightShift = if (personnelType == PersonnelType.OFFICER) {
+            monthlyBaseSalary + totalMonthlyOvertimePay + totalNightShiftAllowance
+        } else {
+            // 營運人員/從業人員的夜點費已計入 hourlyWage/dailyWage 的基礎，所以這裡不再單獨加
+            monthlyBaseSalary + totalMonthlyOvertimePay
+        }
+
 
         return mapOf(
             "amount" to amount,
@@ -395,10 +404,10 @@ class SalaryManager(private val context: Context) {
             "restDayOvertimePay" to restDayOvertimePay, // 休息日加班費
             "nationalHolidayOvertimePay" to nationalHolidayOvertimePay, // 國定假日出勤加班費
             "nationalHolidayEveNightShiftPay" to nationalHolidayEveNightShiftPay, // 國定假日休班前一天接夜班加班費
-            "totalNightShiftAllowance" to totalNightShiftAllowance,
-            "monthlyBaseSalary" to monthlyBaseSalary, // 新增：月基本薪資
-            "totalMonthlyOvertimePay" to totalMonthlyOvertimePay, // 新增：這個月總加班費
-            "totalMonthlySalary" to totalMonthlySalary // 新增：這個月總薪資
+            "totalNightShiftAllowance" to totalNightShiftAllowance, // 夜點費總額
+            "monthlyBaseSalary" to monthlyBaseSalary, // 本月基本薪資 (不含職員夜點費的「最終」加計部分，但包含計入時薪的夜點費影響)
+            "totalMonthlyOvertimePay" to totalMonthlyOvertimePay, // 本月總加班費
+            "totalMonthlySalary" to finalMonthlySalaryIncludingNightShift // 最終總月薪 (已包含職員的夜點費，或營運/從業人員計入時薪的影響)
         )
     }
 }

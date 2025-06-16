@@ -3,19 +3,17 @@
     <item
         android:id="@+id/salaryCalculatorFragment"
         android:icon="@drawable/ic_salary"
-        android:title="薪資計算" />
-
+        android:title="薪資" />
     <item
         android:id="@+id/statusDisplayFragment"
         android:icon="@drawable/ic_status"
         android:title="營運狀態" />
-
-    <item
-        android:id="@+id/sponsorFragment"
-        android:icon="@drawable/ic_sponsor_24"
-        android:title="贊助" />
-
     <item
         android:id="@+id/accidentReportFragment"
-        android:icon="@drawable/ic_report" android:title="事故回報" />
+        android:icon="@drawable/ic_report"
+        android:title="事故回報" />
+    <item
+        android:id="@+id/sponsorFragment"
+        android:icon="@drawable/ic_sponsor"
+        android:title="贊助" />
 </menu>

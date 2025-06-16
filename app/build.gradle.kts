@@ -14,9 +14,9 @@ android {
     defaultConfig {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 18
-        versionName = "1.0.17"
+        targetSdk = 34
+        versionCode = 24
+        versionName = "1.0.23"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
