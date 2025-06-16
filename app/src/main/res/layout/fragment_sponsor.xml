@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         android:text="這是贊助頁面 - 已載入！"
         android:textSize="28sp"
-        android:textColor="#000000"
-        android:textStyle="bold"
+        android:textColor="#000000" android:textStyle="bold"
         android:layout_marginBottom="24dp"/>
 
     <TextView
@@ -23,7 +22,7 @@
         android:text="贊助本應用程式"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:textColor="#000000" android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -32,7 +31,7 @@
         android:textSize="16sp"
         android:gravity="center"
         android:lineSpacingExtra="4dp"
-        android:layout_marginBottom="24dp" />
+        android:textColor="#000000" android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/buyAppButton"
@@ -40,6 +39,7 @@
         android:layout_height="wrap_content"
         android:text="贊助應用程式 (NT$49)"
         android:padding="12dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

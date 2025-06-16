@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import java.math.BigDecimal
+import android.util.Log // 引入 Log 類別
 
 class SalaryCalculatorFragment : Fragment() {
 
@@ -149,6 +150,12 @@ class SalaryCalculatorFragment : Fragment() {
         val nationalHolidayEveNightShiftDays = nationalHolidayEveNightShiftDaysEditText.text.toString().toDoubleOrNull() ?: 0.0
         val nightShiftAllowancePerDay = nightShiftAllowancePerDayEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
 
+        // Log the input parameters before calling getSalary
+        Log.d("SalaryCalcInputs", "PersonnelType: $personnelType, Grade: $grade, OfficerPosition: $officerPosition, OperatingPosition: $operatingPosition, EmployeePosition: $employeePosition, ShiftType: $shiftType")
+        Log.d("SalaryCalcInputs", "ReplaceThreeShiftDays: $replaceThreeShiftDays, HolidayOvertimeDays: $holidayOvertimeDays, DayShiftDays: $dayShiftDays, NightShiftDays: $nightShiftDays")
+        Log.d("SalaryCalcInputs", "RestDayOvertimeDays: $restDayOvertimeDays, NationalHolidayAttendanceDays: $nationalHolidayAttendanceDays, NationalHolidayEveNightShiftDays: $nationalHolidayEveNightShiftDays, NightShiftAllowancePerDay: $nightShiftAllowancePerDay")
+
+
         val salaryDetails = salaryManager.getSalary(
             personnelType,
             grade,
@@ -171,29 +178,41 @@ class SalaryCalculatorFragment : Fragment() {
 
     private fun displayResults(salaryDetails: Map<String, Any>?) {
         if (salaryDetails != null) {
-            val amount = salaryDetails["amount"] as Double
-            val professionalAllowance = salaryDetails["professionalAllowance"] as Double
-            val additionalProfessionalAllowance = salaryDetails["additionalProfessionalAllowance"] as Double
-            val managerialAllowance = salaryDetails["managerialAllowance"] as Double
-            val dutySalaryAllowance = salaryDetails["dutySalaryAllowance"] as Double
-            val talentRetentionAllowance = salaryDetails["talentRetentionAllowance"] as Double
-            val hourlyWage = salaryDetails["hourlyWage"] as Double
-            val dailyWage = salaryDetails["dailyWage"] as Double
+            // Log the entire salaryDetails map to see all values received
+            Log.d("SalaryCalc", "Salary Details Map: $salaryDetails")
 
-            val totalOvertimePayAB = salaryDetails["totalOvertimePayAB"] as Double
-            val replaceThreeShiftOvertimePay = salaryDetails["replaceThreeShiftOvertimePay"] as Double
-            val abClassHolidayOvertimePay = salaryDetails["holidayOvertimePay"] as Double
+            // Using safe casts (as?) and providing default values (?: 0.0 or BigDecimal.ZERO)
+            // This prevents crashes if a key is missing or the type is incorrect,
+            // and defaults to 0.0 if the value is null or missing.
+            val amount = salaryDetails["amount"] as? Double ?: 0.0
+            val professionalAllowance = salaryDetails["professionalAllowance"] as? Double ?: 0.0
+            val additionalProfessionalAllowance = salaryDetails["additionalProfessionalAllowance"] as? Double ?: 0.0
+            val managerialAllowance = salaryDetails["managerialAllowance"] as? Double ?: 0.0
+            val dutySalaryAllowance = salaryDetails["dutySalaryAllowance"] as? Double ?: 0.0
+            val talentRetentionAllowance = salaryDetails["talentRetentionAllowance"] as? Double ?: 0.0
+            val hourlyWage = salaryDetails["hourlyWage"] as? Double ?: 0.0
+            val dailyWage = salaryDetails["dailyWage"] as? Double ?: 0.0
 
-            val totalOvertimePayThreeShift = salaryDetails["totalOvertimePayThreeShift"] as Double
-            val calculatedThreeShiftOvertimePay = salaryDetails["calculatedThreeShiftOvertimePay"] as Double
-            val restDayOvertimePay = salaryDetails["restDayOvertimePay"] as Double
-            val nationalHolidayOvertimePay = salaryDetails["nationalHolidayOvertimePay"] as Double
-            val nationalHolidayEveNightShiftPay = salaryDetails["nationalHolidayEveNightShiftPay"] as Double
-            val totalNightShiftAllowance = salaryDetails["totalNightShiftAllowance"] as Double
+            val totalOvertimePayAB = salaryDetails["totalOvertimePayAB"] as? Double ?: 0.0
+            val replaceThreeShiftOvertimePay = salaryDetails["replaceThreeShiftOvertimePay"] as? Double ?: 0.0
+            val abClassHolidayOvertimePay = salaryDetails["holidayOvertimePay"] as? Double ?: 0.0
 
-            val monthlyBaseSalary = salaryDetails["monthlyBaseSalary"] as Double
-            val totalMonthlyOvertimePay = salaryDetails["totalMonthlyOvertimePay"] as Double
-            val totalMonthlySalary = salaryDetails["totalMonthlySalary"] as Double
+            val totalOvertimePayThreeShift = salaryDetails["totalOvertimePayThreeShift"] as? Double ?: 0.0
+            val calculatedThreeShiftOvertimePay = salaryDetails["calculatedThreeShiftOvertimePay"] as? Double ?: 0.0
+            val restDayOvertimePay = salaryDetails["restDayOvertimePay"] as? Double ?: 0.0
+            val nationalHolidayOvertimePay = salaryDetails["nationalHolidayOvertimePay"] as? Double ?: 0.0
+            val nationalHolidayEveNightShiftPay = salaryDetails["nationalHolidayEveNightShiftPay"] as? Double ?: 0.0
+            val totalNightShiftAllowance = salaryDetails["totalNightShiftAllowance"] as? Double ?: 0.0
+
+            val monthlyBaseSalary = salaryDetails["monthlyBaseSalary"] as? Double ?: 0.0
+            val totalMonthlyOvertimePay = salaryDetails["totalMonthlyOvertimePay"] as? Double ?: 0.0
+            val totalMonthlySalary = salaryDetails["totalMonthlySalary"] as? Double ?: 0.0
+
+            // Log the specific value of totalMonthlySalary and other key totals
+            Log.d("SalaryCalc", "Retrieved monthlyBaseSalary: ${"%.2f".format(monthlyBaseSalary)}")
+            Log.d("SalaryCalc", "Retrieved totalMonthlyOvertimePay: ${"%.2f".format(totalMonthlyOvertimePay)}")
+            Log.d("SalaryCalc", "Retrieved totalNightShiftAllowance: ${"%.2f".format(totalNightShiftAllowance)}")
+            Log.d("SalaryCalc", "Retrieved totalMonthlySalary: ${"%.2f".format(totalMonthlySalary)}")
 
 
             val resultText = """
@@ -205,24 +224,23 @@ class SalaryCalculatorFragment : Fragment() {
                 留才職務津貼: ${"%.2f".format(talentRetentionAllowance)}
                 時薪: ${"%.2f".format(hourlyWage)}
                 日薪: ${"%.2f".format(dailyWage)}
-
                 AB班總加班費: ${"%.2f".format(totalOvertimePayAB)}
                 替三班一天加班費: ${"%.2f".format(replaceThreeShiftOvertimePay)}
                 AB班 例假日/國定假日加班費: ${"%.2f".format(abClassHolidayOvertimePay)}
-
                 三班制總加班費: ${"%.2f".format(totalOvertimePayThreeShift)}
                 三班制排班加班費(1.2hr*1.33x): ${"%.2f".format(calculatedThreeShiftOvertimePay)}
                 休息日加班費: ${"%.2f".format(restDayOvertimePay)}
                 國定假日出勤加班費: ${"%.2f".format(nationalHolidayOvertimePay)}
                 國定假日休班前一天接夜班加班費: ${"%.2f".format(nationalHolidayEveNightShiftPay)}
                 夜班津貼總額: ${"%.2f".format(totalNightShiftAllowance)}
-                
-                本月基本薪資 (含津貼): ${"%.2f".format(monthlyBaseSalary)}
+                 本月基本薪資 (含津貼): ${"%.2f".format(monthlyBaseSalary)}
                 **本月總加班費:** ${"%.2f".format(totalMonthlyOvertimePay)}
                 **本月總薪資 (基本薪+加班費+夜班津貼):** ${"%.2f".format(totalMonthlySalary)}
             """.trimIndent()
             resultTextView.text = resultText
         } else {
+            // This message indicates that salaryDetails was null.
+            Log.e("SalaryCalc", "薪資計算失敗：Salary details map is null!")
             resultTextView.text = "薪資計算失敗，請檢查輸入。"
         }
     }

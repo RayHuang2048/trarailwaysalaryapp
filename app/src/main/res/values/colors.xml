@@ -2,7 +2,8 @@
 <resources>
     <!-- Light theme colors -->
 
-
+    <color name="blue_text">#0000FF</color>
+    <color name="my_primary_blue">#3F51B5</color>
     <color name="your_primary_color">#476810</color>
     <color name="your_on_primary_color">#FFFFFF</color>
     <color name="your_primary_container">#C7F089</color>

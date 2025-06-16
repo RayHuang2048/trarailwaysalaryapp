@@ -1,6 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    // !!! 新增這行 !!!
+    id("org.jetbrains.kotlin.plugin.compose")
+
 }
 
 android {
@@ -11,9 +15,16 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "1.0.14"
+        versionCode = 18
+        versionName = "1.0.17"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
     }
 
     buildFeatures {
@@ -21,7 +32,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "2.2.0-RC2"
     }
 
     compileOptions {
@@ -76,5 +87,26 @@ dependencies {
 
     implementation("com.android.billingclient:billing-ktx:6.1.0")
 
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    // For RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Firebase Cloud Messaging (FCM)
+    implementation("com.google.firebase:firebase-messaging")
+
+// Firebase Authentication (如果需要根據使用者ID儲存令牌，則需要)
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+
+    // Firebase Firestore 核心 SDK
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    // Kotlin 協程 Firebase 擴展 (讓 Firestore 操作可使用 suspend/await 語法)
+    implementation("com.google.firebase:firebase-firestore-ktx:24.11.1")
+
+    // Kotlin 協程 (如果您專案還沒有的話)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
