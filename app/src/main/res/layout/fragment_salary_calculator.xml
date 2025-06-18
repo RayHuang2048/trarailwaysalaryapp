@@ -12,66 +12,76 @@
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingBottom="100dp"> <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="人員類型:"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:paddingBottom="100dp">
+
+        <TextView
+            android:id="@+id/tv_personnel_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="人員類型:"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/personnelTypeSpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/personnel_types"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="職員職位:"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content"  android:entries="@array/personnel_types"
+            android:minHeight="48dp" /> <TextView
+        android:id="@+id/tv_officer_position_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="職員職位:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
 
         <Spinner
             android:id="@+id/officerPositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/officer_positions"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tv_operating_position_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="營運人員職位:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
 
         <Spinner
             android:id="@+id/operatingPositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/operating_positions"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tv_employee_position_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="從業人員職位:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
 
         <Spinner
             android:id="@+id/employeePositionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/employee_positions"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tv_grade_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="薪點:"
@@ -88,6 +98,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_shift_type_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="班別類型:"
@@ -103,6 +114,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_replace_three_shift_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="AB班 替三班一天天數:"
@@ -119,6 +131,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_holiday_overtime_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="AB班 例假日/國定假日加班天數:"
@@ -135,6 +148,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_day_shift_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="三班制 日班天數:"
@@ -151,6 +165,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_night_shift_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="三班制 夜班天數:"
@@ -167,6 +182,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_rest_day_overtime_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="三班制 休息日出勤天數:"
@@ -183,6 +199,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_national_holiday_attendance_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="三班制 國定假日出勤天數:"
@@ -199,6 +216,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_national_holiday_eve_night_shift_days_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="三班制 國定假日休班前一天接夜班天數:"
@@ -215,6 +233,7 @@
             android:minHeight="48dp" />
 
         <TextView
+            android:id="@+id/tv_night_shift_allowance_per_day_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="夜班津貼每日金額:"
@@ -249,7 +268,11 @@
             android:padding="8dp"
             android:background="@android:color/white"
             android:textColor="@android:color/black"
-            /> <View
+            android:text="您的月薪計算結果將在這裡顯示。" />
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="80dp" /> </LinearLayout>
+            android:layout_height="80dp" />
+
+    </LinearLayout>
 </ScrollView>

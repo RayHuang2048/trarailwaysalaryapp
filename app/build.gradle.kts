@@ -15,8 +15,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 34
-        versionCode = 24
-        versionName = "1.0.23"
+        versionCode = 27
+        versionName = "1.0.26"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -109,4 +109,8 @@ dependencies {
 
     // Kotlin 協程 (如果您專案還沒有的話)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    implementation("org.apache.poi:poi-ooxml:5.2.3") // 用於 .xlsx 檔案
+    implementation("org.apache.poi:poi:5.2.3")     // 用於核心組件和 .xls 檔案
+
 }
