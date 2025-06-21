@@ -1,62 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Light theme -->
-    <style name="Theme.YourApp.Light" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/your_primary_color</item>
-        <item name="colorOnPrimary">@color/your_on_primary_color</item>
-        <item name="colorPrimaryContainer">@color/your_primary_container</item>
-        <item name="colorOnPrimaryContainer">@color/your_on_primary_container</item>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.TraRailwaySalaryApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
 
-        <item name="colorSecondary">@color/your_secondary_color</item>
-        <item name="colorOnSecondary">@color/your_on_secondary_color</item>
-        <item name="colorSecondaryContainer">@color/your_secondary_container</item>
-        <item name="colorOnSecondaryContainer">@color/your_on_secondary_container</item>
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
 
-        <item name="colorTertiary">@color/your_tertiary_color</item>
-        <item name="colorOnTertiary">@color/your_on_tertiary_color</item>
-        <item name="colorTertiaryContainer">@color/your_tertiary_container</item>
-        <item name="colorOnTertiaryContainer">@color/your_on_tertiary_container</item>
+        <!-- Background & Surface -->
+        <item name="colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
 
-        <item name="colorBackground">@color/your_background_color</item>
-        <item name="colorOnBackground">@color/your_on_background_color</item>
+        <!-- Error -->
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
 
-        <item name="colorSurface">@color/your_surface_color</item>
-        <item name="colorOnSurface">@color/your_on_surface_color</item>
-
-        <item name="colorError">@color/your_error_color</item>
-        <item name="colorOnError">@color/your_on_error_color</item>
-
-        <item name="android:statusBarColor">@color/your_primary_variant</item>
-        <item name="android:navigationBarColor">@color/your_surface_color</item>
-    </style>
-
-    <!-- Dark theme -->
-    <style name="Theme.YourApp.Dark" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/your_dark_primary_color</item>
-        <item name="colorOnPrimary">@color/your_dark_on_primary_color</item>
-        <item name="colorPrimaryContainer">@color/your_dark_primary_container</item>
-        <item name="colorOnPrimaryContainer">@color/your_dark_on_primary_container</item>
-
-        <item name="colorSecondary">@color/your_dark_secondary_color</item>
-        <item name="colorOnSecondary">@color/your_dark_on_secondary_color</item>
-        <item name="colorSecondaryContainer">@color/your_dark_secondary_container</item>
-        <item name="colorOnSecondaryContainer">@color/your_dark_on_secondary_container</item>
-
-        <item name="colorTertiary">@color/your_dark_tertiary_color</item>
-        <item name="colorOnTertiary">@color/your_dark_on_tertiary_color</item>
-        <item name="colorTertiaryContainer">@color/your_dark_tertiary_container</item>
-        <item name="colorOnTertiaryContainer">@color/your_dark_on_tertiary_container</item>
-
-        <item name="android:colorBackground">@color/your_background_color</item>
-        <item name="colorOnBackground">@color/your_dark_on_background_color</item>
-
-        <item name="colorSurface">@color/your_dark_surface_color</item>
-        <item name="colorOnSurface">@color/your_dark_on_surface_color</item>
-
-        <item name="colorError">@color/your_dark_error_color</item>
-        <item name="colorOnError">@color/your_dark_on_error_color</item>
-
-        <item name="android:statusBarColor">@color/your_dark_primary_variant</item>
-        <item name="android:navigationBarColor">@color/your_dark_surface_color</item>
+        <!-- Status bar / navigation bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">?attr/colorSurface</item>
     </style>
 </resources>

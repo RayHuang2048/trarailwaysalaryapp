@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_background_green_darker"
     tools:context=".SalaryCalculatorFragment">
 
     <LinearLayout
@@ -20,21 +21,26 @@
             android:layout_height="wrap_content"
             android:text="人員類型:"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <Spinner
             android:id="@+id/personnelTypeSpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"  android:entries="@array/personnel_types"
-            android:minHeight="48dp" /> <TextView
-        android:id="@+id/tv_officer_position_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="職員職位:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"
-        android:visibility="gone" />
+            android:layout_height="wrap_content"
+            android:entries="@array/personnel_types"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:id="@+id/tv_officer_position_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="職員職位:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <Spinner
             android:id="@+id/officerPositionSpinner"
@@ -52,7 +58,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <Spinner
             android:id="@+id/operatingPositionSpinner"
@@ -70,7 +77,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="8dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <Spinner
             android:id="@+id/employeePositionSpinner"
@@ -87,7 +95,8 @@
             android:text="薪點:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/gradeEditText"
@@ -95,7 +104,9 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="輸入薪點"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_shift_type_label"
@@ -104,7 +115,8 @@
             android:text="班別類型:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <Spinner
             android:id="@+id/shiftTypeSpinner"
@@ -120,7 +132,8 @@
             android:text="AB班 替三班一天天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/replaceThreeShiftDaysEditText"
@@ -128,7 +141,9 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:hint="天數 (例如: 0.5)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_holiday_overtime_days_label"
@@ -137,16 +152,17 @@
             android:text="AB班 例假日/國定假日加班天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/holidayOvertimeDaysEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
+            android:layout_height="wrap_content"  android:inputType="numberDecimal"
             android:hint="天數 (例如: 1.0)"
-            android:minHeight="48dp" />
-
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
         <TextView
             android:id="@+id/tv_day_shift_days_label"
             android:layout_width="wrap_content"
@@ -154,7 +170,8 @@
             android:text="三班制 日班天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/dayShiftDaysEditText"
@@ -162,7 +179,9 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="天數 (例如: 15)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_night_shift_days_label"
@@ -171,7 +190,8 @@
             android:text="三班制 夜班天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/nightShiftDaysEditText"
@@ -179,7 +199,9 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="天數 (例如: 5)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_rest_day_overtime_days_label"
@@ -188,7 +210,8 @@
             android:text="三班制 休息日出勤天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/restDayOvertimeDaysEditText"
@@ -196,7 +219,9 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:hint="天數 (例如: 1.0)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_national_holiday_attendance_days_label"
@@ -205,7 +230,8 @@
             android:text="三班制 國定假日出勤天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/nationalHolidayAttendanceDaysEditText"
@@ -213,7 +239,9 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:hint="天數 (例如: 1.0)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_national_holiday_eve_night_shift_days_label"
@@ -222,7 +250,8 @@
             android:text="三班制 國定假日休班前一天接夜班天數:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/nationalHolidayEveNightShiftDaysEditText"
@@ -230,7 +259,9 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:hint="天數 (例如: 1.0)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <TextView
             android:id="@+id/tv_night_shift_allowance_per_day_label"
@@ -239,7 +270,8 @@
             android:text="夜班津貼每日金額:"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/app_text_blue_lighter" />
 
         <EditText
             android:id="@+id/nightShiftAllowancePerDayEditText"
@@ -247,7 +279,9 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:hint="金額 (例如: 100)"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/app_text_blue_lighter"
+            android:textColorHint="@color/app_text_blue_lighter" />
 
         <Button
             android:id="@+id/calculateButton"
@@ -256,7 +290,9 @@
             android:text="計算月薪"
             android:textSize="20sp"
             android:layout_marginTop="24dp"
-            android:padding="12dp" />
+            android:padding="12dp"
+            android:backgroundTint="@color/app_background_green_darker"
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/resultTextView"
@@ -267,7 +303,7 @@
             android:textStyle="normal"
             android:padding="8dp"
             android:background="@android:color/white"
-            android:textColor="@android:color/black"
+            android:textColor="@color/app_text_blue_lighter"
             android:text="您的月薪計算結果將在這裡顯示。" />
 
         <View

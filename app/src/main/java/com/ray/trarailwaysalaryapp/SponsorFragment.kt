@@ -38,7 +38,7 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
     private val PRODUCT_ID = "ray_trarailway_salary_app_sponsorship_49ntd_consumable"
 
     // 【重要】請在這裡定義作者的 Email 地址
-    private val AUTHOR_EMAIL = "your.actual.email@example.com" // <--- *** 請務必在這裡修改為您實際的 Email 地址！ ***
+    private val AUTHOR_EMAIL = "rayhuang2048@gmail.com" // <--- *** 請務必在這裡修改為您實際的 Email 地址！ ***
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
