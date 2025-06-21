@@ -1,61 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:backgroundTint="#F0F8F0">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="#FFFFFF"> <TextView
-        android:id="@+id/textViewReportId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="回報 ID: #ABCDEFG"
-        android:textSize="12sp"
-        android:textColor="#0000FF" />
+        android:padding="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textViewReportId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+            tools:text="回報 ID: #12345" />
+
+            <ImageView
+                android:id="@+id/ivPinnedIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_pinned"
+                android:contentDescription="已置頂"
+                android:visibility="gone"
+                app:tint="#FFC107"
+            />
+
+
+            <ImageButton
+                android:id="@+id/btnPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_pin"
+                android:contentDescription="置頂報告"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:tint="#2196F3"
+            />
+
+            <ImageButton
+                android:id="@+id/btnUnpin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_unpin"
+                android:contentDescription="取消置頂報告"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:tint="#F44336"
+            />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="刪除報告"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:tint="#F44336"
+            />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textViewReporterName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="回報人: 張三"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#0000FF" />
+            android:textSize="14sp"
+            android:textColor="#1976D2"
+        tools:text="回報人: 張三" />
 
         <TextView
             android:id="@+id/textViewDateTime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="時間: 2024/06/15 14:30"
             android:textSize="14sp"
-            android:textColor="#0000FF" />
+            android:textColor="#1976D2"
+        tools:text="事故發生時間: 2023-10-26 10:30" />
 
         <TextView
             android:id="@+id/textViewLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="地點: 台北車站南側"
             android:textSize="14sp"
-            android:textColor="#0000FF" />
+            android:textColor="#1976D2"
+        tools:text="地點: 台北車站附近" />
 
         <TextView
             android:id="@+id/textViewDescription"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="描述: 列車出軌，無人傷亡，已處理。"
             android:textSize="14sp"
-            android:textColor="#0000FF" />
+            android:textColor="#1976D2"
+        tools:text="描述: 列車煞車不及，導致輕微追撞。" />
+
+        <TextView
+            android:id="@+id/tvTimestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:textColor="#42A5F5"
+        tools:text="系統回報時間: 2023/10/26 10:35:00" />
+
+        <ImageView
+            android:id="@+id/reportImageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="事故圖片"
+            android:visibility="gone" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

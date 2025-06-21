@@ -1,16 +1,39 @@
 package com.ray.trarailwaysalaryapp
 
-import java.util.UUID // 確保有這個 import
+import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.ServerTimestamp
+import com.google.firebase.Timestamp
 
-// AccidentReport.kt
 data class AccidentReport(
-    val id: String = UUID.randomUUID().toString(), // 每個回報的唯一 ID
-    val reporterName: String = "", // 回報人姓名 (可選)
-    val dateTime: String = "",     // 事故發生時間 (格式化後的字串)
-    val location: String = "",     // 事故地點
-    val description: String = ""   // 事故描述
+    @DocumentId
+    var id: String = "",             // Firestore Document ID
+
+    var reporterName: String = "",   // <--- 修正：改回非空 String，預設為 ""
+    var dateTime: String = "",       // 事故發生時間，由系統預設或手動輸入
+    var location: String = "",
+    var description: String = "",
+
+    @ServerTimestamp // Firestore 將在文件創建/更新時自動設置此值
+    var timestamp: Timestamp? = null,
+
+    var title: String = "",
+    var severity: String = "",
+    var status: String = "",
+    var imageUrl: String = "",
+    var pinned: Boolean = false
 ) {
-    // Firebase Firestore 在將文檔反序列化為 Kotlin 物件時，需要一個公共的無參數建構子。
-    // 即使 Kotlin data class 通常會自動生成，明確添加能確保兼容性。
-    constructor() : this("", "", "", "", "")
+    // 無引數建構子必須與主建構子的參數數量和型別完全匹配
+    constructor() : this(
+        "",    // id
+        "",    // <--- 修正：reporterName 預設為 ""
+        "",    // dateTime
+        "",    // location
+        "",    // description
+        null,  // timestamp
+        "",    // title
+        "",    // severity
+        "",    // status
+        "",    // imageUrl
+        false
+    )
 }
