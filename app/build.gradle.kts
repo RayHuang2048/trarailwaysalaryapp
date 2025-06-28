@@ -16,8 +16,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 36
-        versionName = "1.1.6"
+        versionCode = 38
+        versionName = "1.1.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -87,6 +87,9 @@ dependencies {
     // In-app Billing
     implementation("com.android.billingclient:billing-ktx:6.1.0")
 
+    // Google Play Billing Library (確保版本為 7.0.0 或更高)
+    implementation("com.android.billingclient:billing:7.0.0")
+
     // CardView
     implementation("androidx.cardview:cardview:1.0.0")
 
@@ -133,4 +136,12 @@ dependencies {
     // implementation("com.google.firebase:firebase-firestore")
     // implementation("com.google.firebase:firebase-firestore-ktx")
     // implementation platform('com.google.firebase:firebase-bom:32.x.x')
+
+    // 新增的網路和 JSON 處理依賴項
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.google.code.gson:gson:2.10.1") // <-- 確保這一行存在且正確
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+
 }

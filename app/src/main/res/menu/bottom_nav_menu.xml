@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 新增的台鐵列車動態查詢選單項目 (現在是第一個) -->
+    <item
+        android:id="@+id/trainStatusFragment"
+        android:icon="@drawable/ic_train_status"
+        android:title="列車動態" />
+
     <item
         android:id="@+id/salaryCalculatorFragment"
         android:icon="@drawable/ic_salary"

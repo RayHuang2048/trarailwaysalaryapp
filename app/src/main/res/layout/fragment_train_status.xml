@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/app_background_green_darker"
+    tools:context=".ui.TrainStatusFragment"> <!-- 確保這裡的 tools:context 指向您的 Fragment 路徑 -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="台鐵列車動態查詢"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/app_text_blue_lighter"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/trainNumberEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="輸入列車號碼 (例如: 110)"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:textColor="@color/app_text_blue_lighter"
+        android:textColorHint="@color/app_text_blue_lighter"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/queryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="查詢列車動態"
+        android:backgroundTint="@color/app_background_green_darker"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/resultDisplayTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:textColor="@color/app_text_blue_lighter"
+        android:textSize="16sp"
+        android:text="查詢結果將顯示在這裡..." />
+
+</LinearLayout>

@@ -3,26 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/salaryCalculatorFragment">
+    app:startDestination="@id/trainStatusFragment"> <!-- APP 啟動時的第一個畫面仍是列車動態 -->
+
+    <!-- 新增的台鐵列車動態查詢 Fragment 目的地 (假設在 ui 套件下) -->
+    <fragment
+        android:id="@+id/trainStatusFragment"
+        android:name="com.ray.trarailwaysalaryapp.ui.TrainStatusFragment"
+        android:label="列車動態"
+        tools:layout="@layout/fragment_train_status" />
+
+    <!-- 您的薪資計算 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
         android:id="@+id/salaryCalculatorFragment"
         android:name="com.ray.trarailwaysalaryapp.SalaryCalculatorFragment"
         android:label="薪資計算"
         tools:layout="@layout/fragment_salary_calculator" />
 
+    <!-- 營運狀態 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
         android:id="@+id/statusDisplayFragment"
         android:name="com.ray.trarailwaysalaryapp.StatusDisplayFragment"
         android:label="營運狀態"
         tools:layout="@layout/fragment_status_display" />
 
+    <!-- 事故回報 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
-        android:id="@+id/accidentReportFragment"  android:name="com.ray.trarailwaysalaryapp.AccidentReportFragment"
+        android:id="@+id/accidentReportFragment"
+        android:name="com.ray.trarailwaysalaryapp.AccidentReportFragment"
         android:label="事故回報"
         tools:layout="@layout/fragment_accident_report" />
 
+    <!-- 贊助 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
-        android:id="@+id/sponsorFragment"       android:name="com.ray.trarailwaysalaryapp.SponsorFragment"
+        android:id="@+id/sponsorFragment"
+        android:name="com.ray.trarailwaysalaryapp.SponsorFragment"
         android:label="贊助"
         tools:layout="@layout/fragment_sponsor" />
 
