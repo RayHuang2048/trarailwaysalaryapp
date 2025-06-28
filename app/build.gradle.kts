@@ -16,8 +16,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 36
-        versionName = "1.1.6"
+        versionCode = 37
+        versionName = "1.1.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
