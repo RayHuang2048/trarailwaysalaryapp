@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.Timestamp // 確保這裡有導入 Firebase Timestamp
+import com.google.firebase.auth.FirebaseAuth // 導入 FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -44,6 +45,8 @@ class AccidentReportFragment : Fragment(),
 
     // Firestore 實例
     private lateinit var db: FirebaseFirestore
+    // FirebaseAuth 實例
+    private lateinit var auth: FirebaseAuth
     // Adapter
     private lateinit var accidentReportAdapter: AccidentReportAdapter
     // RecyclerView 參考
@@ -67,7 +70,7 @@ class AccidentReportFragment : Fragment(),
     // 判斷是否只顯示置頂報告的狀態
     private var showPinnedOnly: Boolean = false // 預設不只顯示置頂
 
-    // 判斷是否為管理員的狀態，這裡不需要 lateinit，因為可能在 onCreate 之前就被設置
+    // 判斷是否為管理員的狀態
     private var isAdminUser: Boolean = false
 
 
@@ -85,9 +88,33 @@ class AccidentReportFragment : Fragment(),
         val view = inflater.inflate(R.layout.fragment_accident_report, container, false)
         Log.d(TAG, "onCreateView started.")
 
-        // 初始化 Firebase Firestore
+        // 初始化 Firebase Firestore 和 FirebaseAuth
         db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance() // 初始化 FirebaseAuth 實例
         Log.d(TAG, "Firebase Firestore initialized.")
+
+        // *** 關鍵修正：確保用戶已登入 Firebase ***
+        // Firestore 規則要求 request.auth != null，所以必須確保有用戶登入。
+        // 如果用戶未登入，則嘗試匿名登入。
+        if (auth.currentUser == null) {
+            Log.d(TAG, "No Firebase user found, attempting anonymous sign-in.")
+            auth.signInAnonymously()
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "匿名登入成功！UID: ${auth.currentUser?.uid}")
+                        // 匿名登入成功後，重新觸發數據監聽，確保權限生效
+                        // 這裡不需要額外呼叫 listenForAccidentReports，因為它會在 onCreateView 結束時被呼叫
+                        // 並且 auth.currentUser 狀態的改變會觸發後續的 listenForAccidentReports
+                    } else {
+                        Log.e(TAG, "匿名登入失敗！", task.exception)
+                        Toast.makeText(context, "匿名登入失敗: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+        } else {
+            Log.d(TAG, "用戶已登入。UID: ${auth.currentUser?.uid}")
+        }
+        // *** 匿名登入邏輯結束 ***
+
 
         // 初始化 UI 元素
         editTextReporterName = view.findViewById(R.id.editTextReporterName)
@@ -105,8 +132,6 @@ class AccidentReportFragment : Fragment(),
         recyclerViewAccidentReports.layoutManager = LinearLayoutManager(context)
 
         // 檢查初始管理員狀態，以便正確初始化 Adapter
-        // 這裡假設 AdminManager.isAdmin() 已經可以提供即時狀態
-        // 如果 AdminManager 的狀態是異步加載的，您需要調整邏輯
         isAdminUser = AdminManager.isAdmin()
 
         // 修正 Adapter 初始化：不再傳遞 emptyList()
@@ -163,6 +188,7 @@ class AccidentReportFragment : Fragment(),
         }
 
         // 首次載入時監聽 Firestore 數據
+        // 即使匿名登入是異步的，這裡的監聽器也會在登入成功後自動觸發更新
         listenForAccidentReports()
         Log.d(TAG, "onCreateView completed, listenForAccidentReports called for the first time.")
 
@@ -206,21 +232,12 @@ class AccidentReportFragment : Fragment(),
 
         // 由於 isAdmin 狀態可能改變，且 Adapter 的 isAdmin 是 val，
         // 我們需要重新創建 Adapter 實例來更新 isAdmin 狀態。
-        // 或者，在 Adapter 中添加一個方法來更新其內部 isAdmin 狀態，
-        // 但重新創建 Adapter 並不影響 ListAdapter 的 DiffUtil 機制。
         accidentReportAdapter = AccidentReportAdapter(isAdmin = isAdmin, listener = this)
         recyclerViewAccidentReports.adapter = accidentReportAdapter
 
         // 重新監聽以應用最新的篩選狀態（如果isAdmin變化導致showPinnedOnly變化）
         // 確保此處的 listenForAccidentReports() 會重新建立查詢
         listenForAccidentReports()
-
-        // 注意：accidentReportAdapter.notifyDataSetChanged() 在 ListAdapter 中通常不需要，
-        // 因為 submitList() 會處理 DiffUtil 更新。但如果僅是 UI 元素（如按鈕的可見性）改變，
-        // 而數據本身未變，且 Adapter 沒有在 onBindViewHolder 中響應 isAdmin 變化，則可能需要。
-        // 在我們的 Adapter 設計中，onBindViewHolder 會檢查 isAdmin。
-        // 因此，只要 listenForAccidentReports 重新觸發 submitList，通常就足夠了。
-        // accidentReportAdapter.notifyDataSetChanged() // 一般情況下不需要
     }
 
 
@@ -340,7 +357,6 @@ class AccidentReportFragment : Fragment(),
                             report?.let {
                                 reports.add(it)
                                 // 直接使用 it.reporterName (非空 String)，因為它現在的預設值是 ""
-                                // 修正：移除多餘的空安全處理，因為 reporterName 已是非空 String
                                 Log.d(TAG, "Converted report (Success): ID=${it.id}, Reporter=${it.reporterName}, Time=${it.dateTime}, Pinned=${it.pinned}, Timestamp=${it.timestamp}")
                             } ?: run {
                                 Log.e(TAG, "Failed to convert document to AccidentReport (toObject returned null): Document ID = ${doc.id}, Data = ${doc.data}")

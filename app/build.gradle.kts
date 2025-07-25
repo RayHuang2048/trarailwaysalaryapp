@@ -5,7 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") // 假設這是您專案所需，保留
     id("org.jetbrains.kotlin.kapt") // 支援 Kotlin 註解處理，特別是 Glide
     // 如果您有使用 Firebase App Distribution，請保留這行：
-    // id("com.google.firebase.appdistribution")
+    id("com.google.firebase.appdistribution") version "4.0.0"
 }
 
 android {
@@ -16,8 +16,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 38
-        versionName = "1.1.8"
+        versionCode = 41
+        versionName = "1.1.11"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -56,6 +56,16 @@ android {
     }
 }
 
+// *** 新增：強制解析策略以確保 Google Play Billing Library 版本 ***
+configurations.all {
+    resolutionStrategy {
+        // 強制所有對 'com.android.billingclient:billing' 的依賴都使用 7.0.0 版本
+        force("com.android.billingclient:billing:7.0.0")
+    }
+}
+// *** 新增結束 ***
+
+
 dependencies {
     // AndroidX 核心和 Lifecycle 庫
     implementation("androidx.core:core-ktx:1.13.1")
@@ -85,10 +95,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // In-app Billing
-    implementation("com.android.billingclient:billing-ktx:6.1.0")
+    //implementation("com.android.billingclient:billing-ktx:6.1.0")
 
     // Google Play Billing Library (確保版本為 7.0.0 或更高)
-    implementation("com.android.billingclient:billing:7.0.0")
+    implementation("com.android.billingclient:billing:8.0.0")
 
     // CardView
     implementation("androidx.cardview:cardview:1.0.0")
@@ -142,6 +152,21 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1") // <-- 確保這一行存在且正確
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+    // Retrofit for network requests
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson converter for JSON parsing
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OkHttp for logging network requests (optional, but good for debugging)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
+    // Coroutines for asynchronous operations
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // ViewModel and LiveData KTX extensions
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3") // 使用 ViewModelProvider 時需要
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3") // LiveData
 
 
 }

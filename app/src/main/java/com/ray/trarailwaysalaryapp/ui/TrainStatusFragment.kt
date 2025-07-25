@@ -1,85 +1,98 @@
-// app/src/main/java/com/ray/trarailwaysalaryapp/ui/TrainStatusFragment.kt
-
 package com.ray.trarailwaysalaryapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast // 引入 Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ray.trarailwaysalaryapp.R // 確保 R 檔案正確引入
-import com.ray.trarailwaysalaryapp.viewmodel.TrainStatusViewModel // 引入 ViewModel
+import com.ray.trarailwaysalaryapp.R
+import com.ray.trarailwaysalaryapp.viewmodel.TrainStatusViewModel
 
 class TrainStatusFragment : Fragment() {
 
+    private val TAG = "TrainStatusFragment"
+
     private lateinit var viewModel: TrainStatusViewModel
-    private lateinit var trainNumberEditText: EditText
+    private lateinit var trainNoEditText: EditText
     private lateinit var queryButton: Button
-    private lateinit var resultDisplayTextView: TextView
+    private lateinit var resultTextView: TextView
+    private lateinit var errorMessageTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // 載入佈局檔案
+        Log.d(TAG, "onCreateView: TrainStatusFragment 建立。")
         val view = inflater.inflate(R.layout.fragment_train_status, container, false)
 
-        // 初始化 UI 元件
-        trainNumberEditText = view.findViewById(R.id.trainNumberEditText)
-        queryButton = view.findViewById(R.id.queryButton)
-        resultDisplayTextView = view.findViewById(R.id.resultDisplayTextView)
-
-        // 初始化 ViewModel。ViewModel 應該由 Fragment 或 Activity 管理其生命週期。
+        // 初始化 ViewModel
         viewModel = ViewModelProvider(this).get(TrainStatusViewModel::class.java)
 
-        // 觀察列車動態資料的變化。當 ViewModel 的 _trainLiveData 更新時，這裡會收到通知。
-        viewModel.trainLiveData.observe(viewLifecycleOwner) { trains ->
-            if (trains.isNotEmpty()) {
-                val resultText = StringBuilder()
-                trains.forEach { train ->
-                    resultText.append("車次: ${train.TrainNo} (${train.TrainTypeName.Zh_tw})\n")
-                    resultText.append("起訖站: ${train.StartingStationName.Zh_tw} - ${train.EndingStationName.Zh_tw}\n")
-                    resultText.append("目前: ${train.StationName?.Zh_tw ?: "行駛中"}") // 如果 StationName 為空，則顯示 "行駛中"
-                    if (train.DelayTime > 0) {
-                        resultText.append(" 晚點 ${train.DelayTime} 分鐘\n")
-                    } else {
-                        resultText.append(" 準點\n")
-                    }
-                    // TDX 的 UpdateTime 格式為 ISO 8601，我們只取時間部分 (例如 "2025-07-02T10:30:00+08:00" 取 "10:30")
-                    val timePart = if (train.UpdateTime.length >= 16) train.UpdateTime.substring(11, 16) else train.UpdateTime
-                    resultText.append("更新時間: $timePart\n\n")
-                }
-                resultDisplayTextView.text = resultText.toString()
-            } else {
-                resultDisplayTextView.text = "未找到列車動態資訊，請檢查列車號碼或稍後再試。"
-            }
-        }
+        // 初始化 UI 元件
+        trainNoEditText = view.findViewById(R.id.trainNoEditText)
+        queryButton = view.findViewById(R.id.queryButton)
+        resultTextView = view.findViewById(R.id.resultTextView)
+        errorMessageTextView = view.findViewById(R.id.errorMessageTextView)
 
-        // 觀察錯誤訊息。當 ViewModel 發生錯誤時，這裡會收到通知並顯示 Toast。
-        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            if (message.isNotBlank()) {
-                Toast.makeText(context, "錯誤: $message", Toast.LENGTH_LONG).show()
-                resultDisplayTextView.text = "查詢失敗。請檢查網路或輸入。"
-            }
-        }
-
-        // 設置查詢按鈕的點擊事件監聽器
+        // 設定查詢按鈕的點擊事件
         queryButton.setOnClickListener {
-            val trainNo = trainNumberEditText.text.toString().trim() // 獲取輸入的列車號碼並去除空格
-            if (trainNo.isNotBlank()) {
-                resultDisplayTextView.text = "正在查詢列車動態，請稍候..."
-                viewModel.queryTrainLiveStatus(trainNo) // 呼叫 ViewModel 中的查詢函數
-            } else {
-                resultDisplayTextView.text = "請輸入列車號碼以進行查詢。"
-                Toast.makeText(context, "請輸入列車號碼！", Toast.LENGTH_SHORT).show()
-            }
+            val trainNo = trainNoEditText.text.toString()
+            Log.d(TAG, "查詢按鈕被點擊，列車號碼: $trainNo")
+            viewModel.queryTrainLiveStatus(trainNo)
         }
+
+        // 觀察列車動態 LiveData 的變化
+        viewModel.trainLiveData.observe(viewLifecycleOwner, Observer { trainList ->
+            Log.d(TAG, "trainLiveData 收到更新。列車數量: ${trainList.size}")
+            if (trainList.isNotEmpty()) {
+                val train = trainList[0] // 假設我們只顯示第一筆列車的資訊
+                val statusText = buildString {
+                    append("列車號碼: ${train.TrainNo}\n")
+                    append("車種: ${train.TrainTypeName.Zh_tw} (${train.TrainTypeName.En})\n")
+                    // 修正：顯示列車當前所在車站名稱，而不是 StartingStationName
+                    // 因為 TrainLiveInfo 中不再包含 StartingStationName
+                    append("目前車站: ${train.StationName?.Zh_tw ?: "站間行駛"}\n") // 使用 ?. 和 ?: 處理可能為 null 的情況
+                    append("誤點時間: ${train.DelayTime} 分鐘\n")
+                    append("狀態: ")
+                    when (train.TrainStationStatus) {
+                        0 -> append("正常")
+                        1 -> append("進站中")
+                        2 -> append("離站中")
+                        3 -> append("停靠中")
+                        else -> append("未知")
+                    }
+                    append("\n")
+                    append("更新時間: ${train.UpdateTime}\n")
+                }
+                resultTextView.text = statusText
+                errorMessageTextView.text = "" // 清除錯誤訊息
+            } else {
+                resultTextView.text = "未找到列車動態資訊。"
+                // 如果 ViewModel 已經設定了錯誤訊息，這裡就不需要再次設定
+                // errorMessageTextView.text = "請輸入有效的列車號碼或稍後再試。"
+            }
+        })
+
+        // 觀察錯誤訊息 LiveData 的變化
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
+            Log.e(TAG, "errorMessage 收到更新: $errorMessage")
+            errorMessageTextView.text = errorMessage
+            if (errorMessage.isNotBlank()) {
+                resultTextView.text = "" // 有錯誤時，清空結果顯示
+            }
+        })
 
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, "onDestroyView: TrainStatusFragment 視圖銷毀。")
     }
 }
