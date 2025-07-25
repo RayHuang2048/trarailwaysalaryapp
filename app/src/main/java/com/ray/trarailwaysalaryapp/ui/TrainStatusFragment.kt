@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ray.trarailwaysalaryapp.R
 import com.ray.trarailwaysalaryapp.viewmodel.TrainStatusViewModel
+import com.ray.trarailwaysalaryapp.data.StopTime // 導入 StopTime 資料類別
 
 class TrainStatusFragment : Fragment() {
 
@@ -44,20 +45,20 @@ class TrainStatusFragment : Fragment() {
         queryButton.setOnClickListener {
             val trainNo = trainNoEditText.text.toString()
             Log.d(TAG, "查詢按鈕被點擊，列車號碼: $trainNo")
-            viewModel.queryTrainLiveStatus(trainNo)
+            viewModel.queryTrainLiveStatus(trainNo) // 這個呼叫現在也會觸發時刻表查詢
         }
 
         // 觀察列車動態 LiveData 的變化
         viewModel.trainLiveData.observe(viewLifecycleOwner, Observer { trainList ->
             Log.d(TAG, "trainLiveData 收到更新。列車數量: ${trainList.size}")
+            // 清空之前的內容，準備顯示新的動態和時刻表
+            resultTextView.text = ""
             if (trainList.isNotEmpty()) {
                 val train = trainList[0] // 假設我們只顯示第一筆列車的資訊
                 val statusText = buildString {
                     append("列車號碼: ${train.TrainNo}\n")
                     append("車種: ${train.TrainTypeName.Zh_tw} (${train.TrainTypeName.En})\n")
-                    // 修正：顯示列車當前所在車站名稱，而不是 StartingStationName
-                    // 因為 TrainLiveInfo 中不再包含 StartingStationName
-                    append("目前車站: ${train.StationName?.Zh_tw ?: "站間行駛"}\n") // 使用 ?. 和 ?: 處理可能為 null 的情況
+                    append("目前車站: ${train.StationName?.Zh_tw ?: "站間行駛"}\n")
                     append("誤點時間: ${train.DelayTime} 分鐘\n")
                     append("狀態: ")
                     when (train.TrainStationStatus) {
@@ -74,17 +75,39 @@ class TrainStatusFragment : Fragment() {
                 errorMessageTextView.text = "" // 清除錯誤訊息
             } else {
                 resultTextView.text = "未找到列車動態資訊。"
-                // 如果 ViewModel 已經設定了錯誤訊息，這裡就不需要再次設定
-                // errorMessageTextView.text = "請輸入有效的列車號碼或稍後再試。"
             }
         })
+
+        // *** 新增：觀察列車時刻表 LiveData 的變化 ***
+        viewModel.trainTimetableLiveData.observe(viewLifecycleOwner, Observer { stopTimes ->
+            Log.d(TAG, "trainTimetableLiveData 收到更新。停靠站數量: ${stopTimes.size}")
+            val currentText = resultTextView.text.toString()
+            val timetableSection = StringBuilder()
+
+            if (stopTimes.isNotEmpty()) {
+                timetableSection.append("\n--- 列車時刻表 ---\n")
+                for (stop in stopTimes) {
+                    timetableSection.append("站序: ${stop.Sequence}, ")
+                    timetableSection.append("車站: ${stop.StationName.Zh_tw} (${stop.StationName.En}), ")
+                    timetableSection.append("抵達: ${stop.ArrivalTime ?: "N/A"}, ") // 如果為 null 顯示 N/A
+                    timetableSection.append("出發: ${stop.DepartureTime ?: "N/A"}\n") // 如果為 null 顯示 N/A
+                }
+            } else {
+                timetableSection.append("\n--- 未找到列車時刻表資訊 ---")
+            }
+            // 將時刻表資訊追加到現有的列車動態資訊後面
+            resultTextView.text = currentText + timetableSection.toString()
+        })
+        // *** 新增觀察結束 ***
+
 
         // 觀察錯誤訊息 LiveData 的變化
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
             Log.e(TAG, "errorMessage 收到更新: $errorMessage")
             errorMessageTextView.text = errorMessage
             if (errorMessage.isNotBlank()) {
-                resultTextView.text = "" // 有錯誤時，清空結果顯示
+                // 如果有錯誤，清空結果顯示，但保留錯誤訊息
+                resultTextView.text = ""
             }
         })
 

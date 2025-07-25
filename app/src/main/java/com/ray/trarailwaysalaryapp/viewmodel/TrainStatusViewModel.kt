@@ -10,6 +10,9 @@ import com.google.gson.reflect.TypeToken
 import com.ray.trarailwaysalaryapp.data.TDXAccessToken
 import com.ray.trarailwaysalaryapp.data.TdxApiResponse
 import com.ray.trarailwaysalaryapp.data.TrainLiveInfo
+import com.ray.trarailwaysalaryapp.data.TrainTimetableResponse // 導入新的時刻表回應資料類別
+import com.ray.trarailwaysalaryapp.data.TrainTimetableDetail // 導入時刻表詳細資料類別
+import com.ray.trarailwaysalaryapp.data.StopTime // 導入停靠站資料類別
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -20,6 +23,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat // 用於日期格式化
+import java.util.Date // 用於獲取當前日期
+import java.util.Locale // 用於地區設定
 import java.util.concurrent.TimeUnit
 
 class TrainStatusViewModel : ViewModel() {
@@ -40,10 +46,12 @@ class TrainStatusViewModel : ViewModel() {
 
     private val gson = Gson()
 
-    // LiveData 用於向 UI 發送列車即時動態資料列表
-    // 這裡宣告為非空列表，因此 postValue 時必須傳遞非空的 List<TrainLiveInfo>
     private val _trainLiveData = MutableLiveData<List<TrainLiveInfo>>()
     val trainLiveData: LiveData<List<TrainLiveInfo>> = _trainLiveData
+
+    // 新增 LiveData 用於向 UI 發送列車時刻表資料列表
+    private val _trainTimetableLiveData = MutableLiveData<List<StopTime>>()
+    val trainTimetableLiveData: LiveData<List<StopTime>> = _trainTimetableLiveData
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
@@ -75,6 +83,11 @@ class TrainStatusViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 負責向 TDX 認證服務發送請求，獲取 Access Token。
+     * TDX API 需要 OAuth 2.0 Client Credentials 認證流程。
+     * @return 成功獲取則回傳 Access Token 字串，否則回傳 null。
+     */
     private suspend fun getAccessToken(): String? {
         Log.d(TAG, "嘗試獲取 Access Token...")
         val url = "https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token"
@@ -114,8 +127,14 @@ class TrainStatusViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 根據列車號碼查詢台鐵列車的即時動態資訊。
+     * 如果 Access Token 過期或無效，會嘗試重新獲取並重試查詢。
+     * @param trainNo 要查詢的列車號碼。
+     */
     fun queryTrainLiveStatus(trainNo: String) {
         _trainLiveData.postValue(emptyList<TrainLiveInfo>())
+        _trainTimetableLiveData.postValue(emptyList()) // 清空時刻表數據
         _errorMessage.postValue("")
 
         if (trainNo.isBlank()) {
@@ -156,16 +175,14 @@ class TrainStatusViewModel : ViewModel() {
                     val trains = apiResponse?.TrainLiveBoards
                     Log.d(TAG, "解析後的 trains 列表: $trains")
 
-                    // 修正：確保 trains 在傳遞給 postValue 之前是非空的
-                    // 使用 Elvis 操作符 ?: 來提供一個空列表作為備用值
-                    _trainLiveData.postValue(trains ?: emptyList<TrainLiveInfo>()) // <--- 修正這裡
-                    _errorMessage.postValue("") // 清除錯誤訊息
+                    _trainLiveData.postValue(trains ?: emptyList<TrainLiveInfo>())
+                    _errorMessage.postValue("")
 
                     if (!trains.isNullOrEmpty()) {
                         Log.d(TAG, "列車動態查詢成功，找到 ${trains.size} 筆資料。")
                     } else {
                         Log.d(TAG, "未找到列車 ${trainNo} 的即時動態資訊。")
-                        _errorMessage.postValue("未找到列車 ${trainNo} 的即時動態資訊。") // 確保 UI 也顯示此訊息
+                        _errorMessage.postValue("未找到列車 ${trainNo} 的即時動態資訊。")
                     }
                 } else {
                     val errorBodyString = response.errorBody()?.string()
@@ -190,6 +207,62 @@ class TrainStatusViewModel : ViewModel() {
                 _errorMessage.postValue(errorMsg)
                 _trainLiveData.postValue(emptyList<TrainLiveInfo>())
             }
+
+            // 無論即時動態查詢成功與否，都嘗試查詢時刻表
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            queryTrainTimetable(trainNo, currentDate)
+        }
+    }
+
+    /**
+     * 根據列車號碼和日期查詢台鐵列車的時刻表資訊。
+     * @param trainNo 要查詢的列車號碼。
+     * @param trainDate 要查詢的日期，格式為 YYYY-MM-DD。
+     */
+    private suspend fun queryTrainTimetable(trainNo: String, trainDate: String) {
+        Log.d(TAG, "嘗試查詢列車時刻表。列車號碼: $trainNo, 日期: $trainDate")
+        var currentToken = accessToken?.access_token
+
+        if (currentToken == null) {
+            Log.e(TAG, "無法獲取存取令牌，無法查詢列車時刻表。")
+            _trainTimetableLiveData.postValue(emptyList()) // 清空時刻表數據
+            return
+        }
+
+        try {
+            val response = tdxApiService.getTrainTimetable(
+                authorization = "Bearer $currentToken",
+                trainNo = trainNo,
+                trainDate = trainDate,
+                format = "JSON"
+            )
+
+            Log.d(TAG, "查詢列車時刻表回應碼: ${response.code()}")
+            Log.d(TAG, "查詢列車時刻表回應訊息: ${response.message()}")
+
+            if (response.isSuccessful) {
+                val apiResponse = response.body()
+                val timetableDetails = apiResponse?.TrainTimetables
+
+                if (!timetableDetails.isNullOrEmpty()) {
+                    // 假設我們只關心找到的第一個列車時刻表（因為通常只有一個匹配的）
+                    val stopTimes = timetableDetails[0].StopTimes
+                    _trainTimetableLiveData.postValue(stopTimes)
+                    Log.d(TAG, "列車時刻表查詢成功，找到 ${stopTimes.size} 個停靠站。")
+                } else {
+                    _trainTimetableLiveData.postValue(emptyList())
+                    Log.d(TAG, "未找到列車 ${trainNo} 在 ${trainDate} 的時刻表資訊。")
+                }
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+                val errorMsg = "查詢列車時刻表失敗: HTTP ${response.code()} - ${response.message()} - ${errorBodyString ?: "無錯誤內容"}"
+                Log.e(TAG, errorMsg)
+                _trainTimetableLiveData.postValue(emptyList())
+            }
+        } catch (e: Exception) {
+            val errorMsg = "查詢列車時刻表時發生網路錯誤: ${e.message}"
+            Log.e(TAG, errorMsg, e)
+            _trainTimetableLiveData.postValue(emptyList())
         }
     }
 }
