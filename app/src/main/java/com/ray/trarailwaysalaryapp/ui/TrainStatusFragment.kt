@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ray.trarailwaysalaryapp.R
+import com.ray.trarailwaysalaryapp.data.StopTime
 import com.ray.trarailwaysalaryapp.viewmodel.TrainStatusViewModel
-import com.ray.trarailwaysalaryapp.data.StopTime // 導入 StopTime 資料類別
 
 class TrainStatusFragment : Fragment() {
 
@@ -24,6 +25,7 @@ class TrainStatusFragment : Fragment() {
     private lateinit var queryButton: Button
     private lateinit var resultTextView: TextView
     private lateinit var errorMessageTextView: TextView
+    private lateinit var trainRouteComposeView: ComposeView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +42,7 @@ class TrainStatusFragment : Fragment() {
         queryButton = view.findViewById(R.id.queryButton)
         resultTextView = view.findViewById(R.id.resultTextView)
         errorMessageTextView = view.findViewById(R.id.errorMessageTextView)
+        trainRouteComposeView = view.findViewById(R.id.trainRouteComposeView)
 
         // 設定查詢按鈕的點擊事件
         queryButton.setOnClickListener {
@@ -73,8 +76,13 @@ class TrainStatusFragment : Fragment() {
                 }
                 resultTextView.text = statusText
                 errorMessageTextView.text = "" // 清除錯誤訊息
+
+                // 更新 ComposeView
+                val stopTimes = viewModel.trainTimetableLiveData.value ?: emptyList()
+                updateTrainRouteView(stopTimes, train.StationName?.Zh_tw)
             } else {
                 resultTextView.text = "未找到列車動態資訊。"
+                updateTrainRouteView(emptyList(), null)
             }
         })
 
@@ -92,8 +100,12 @@ class TrainStatusFragment : Fragment() {
                     timetableSection.append("抵達: ${stop.ArrivalTime ?: "N/A"}, ") // 如果為 null 顯示 N/A
                     timetableSection.append("出發: ${stop.DepartureTime ?: "N/A"}\n") // 如果為 null 顯示 N/A
                 }
+                // 更新 ComposeView
+                val train = viewModel.trainLiveData.value?.firstOrNull()
+                updateTrainRouteView(stopTimes, train?.StationName?.Zh_tw)
             } else {
                 timetableSection.append("\n--- 未找到列車時刻表資訊 ---")
+                updateTrainRouteView(emptyList(), null)
             }
             // 將時刻表資訊追加到現有的列車動態資訊後面
             resultTextView.text = currentText + timetableSection.toString()
@@ -108,10 +120,17 @@ class TrainStatusFragment : Fragment() {
             if (errorMessage.isNotBlank()) {
                 // 如果有錯誤，清空結果顯示，但保留錯誤訊息
                 resultTextView.text = ""
+                updateTrainRouteView(emptyList(), null)
             }
         })
 
         return view
+    }
+
+    private fun updateTrainRouteView(stops: List<StopTime>, currentStationName: String?) {
+        trainRouteComposeView.setContent {
+            TrainRouteLine(stops = stops, currentStationName = currentStationName)
+        }
     }
 
     override fun onDestroyView() {

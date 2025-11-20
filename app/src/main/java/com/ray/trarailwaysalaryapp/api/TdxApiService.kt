@@ -18,7 +18,7 @@ interface TdxApiService {
      * @param format 回應資料格式，預設為 JSON。
      * @return 包含 TrainLiveInfo 列表的 Response。
      */
-    @GET("v2/Rail/TRA/TrainLiveBoard/TrainNo/{TrainNo}")
+    @GET("v3/Rail/TRA/TrainLiveBoard/TrainNo/{TrainNo}")
     suspend fun getTrainLiveInfo(
         @Header("Authorization") authorization: String,
         @Path("TrainNo") trainNo: String,
