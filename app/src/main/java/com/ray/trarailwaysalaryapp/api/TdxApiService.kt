@@ -18,7 +18,7 @@ interface TdxApiService {
      * @param format 回應資料格式，預設為 JSON。
      * @return 包含 TrainLiveInfo 列表的 Response。
      */
-    @GET("v3/Rail/TRA/TrainLiveBoard/TrainNo/{TrainNo}")
+    @GET("v2/Rail/TRA/TrainLiveBoard/TrainNo/{TrainNo}")
     suspend fun getTrainLiveInfo(
         @Header("Authorization") authorization: String,
         @Path("TrainNo") trainNo: String,
@@ -26,18 +26,17 @@ interface TdxApiService {
     ): Response<TdxApiResponse<TrainLiveInfo>>
 
     /**
-     * 獲取台鐵列車的每日時刻表資訊。
+     * 獲取台鐵列車的一般時刻表資訊。
      * @param authorization OAuth 2.0 Access Token (Bearer token)。
      * @param trainNo 列車號碼。
-     * @param trainDate 列車運行日期，格式為 YYYY-MM-DD。
      * @param format 回應資料格式，預設為 JSON。
      * @return 包含 TrainTimetableDetail 列表的 Response。
      */
-    @GET("v3/Rail/TRA/DailyTrainInfo/TrainTimetable/TrainNo/{TrainNo}/TrainDate/{TrainDate}")
+    @GET("v3/Rail/TRA/GeneralTrainTimetable/TrainNo/{TrainNo}")
     suspend fun getTrainTimetable(
         @Header("Authorization") authorization: String,
         @Path("TrainNo") trainNo: String,
-        @Path("TrainDate") trainDate: String, // YYYY-MM-DD 格式
+        @Query("\$top") top: Int = 30,
         @Query("\$format") format: String = "JSON"
-    ): Response<TrainTimetableResponse> // 注意：這裡使用 TrainTimetableResponse
+    ): Response<TrainTimetableResponse>
 }
