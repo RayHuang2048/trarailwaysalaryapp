@@ -34,16 +34,16 @@ fun TrainRouteLine(
     val lineColor = MaterialTheme.colorScheme.primary
     val stationColor = MaterialTheme.colorScheme.secondary
     val textColor = Color.White // Use bright white for text color
+    val timeColor = Color.LightGray // Dimmer color for time
 
-    // Define vertical spacing and calculate the required height
-    val stopSpacing = 60.dp
+    // Increase vertical spacing and calculate the required height
+    val stopSpacing = 80.dp
     val topPadding = 30.dp
     val bottomPadding = 30.dp
     val totalHeight =
         stopSpacing * (stops.size - 1).coerceAtLeast(0).toFloat() +
                 topPadding +
                 bottomPadding
-
     Canvas(modifier = modifier.fillMaxWidth().height(totalHeight)) {
         val lineX = 60.dp.toPx() // X position for the vertical line
 
@@ -61,6 +61,14 @@ fun TrainRouteLine(
             textAlign = Paint.Align.LEFT
             textSize = 16.sp.toPx()
         }
+
+        // Prepare paint for time
+        val timeTextPaint = Paint().apply {
+            color = timeColor.toArgb()
+            textAlign = Paint.Align.LEFT
+            textSize = 12.sp.toPx()
+        }
+
         // Helper to vertically center the text with the station dot
         val textVerticalOffset = (textPaint.descent() + textPaint.ascent()) / 2
 
@@ -81,6 +89,15 @@ fun TrainRouteLine(
                 lineX + 25.dp.toPx(), // Position text to the right of the line
                 stationY - textVerticalOffset, // Vertically center the text
                 textPaint
+            )
+
+            // Draw arrival and departure times below the station name
+            val timeText = "到站: ${stop.ArrivalTime ?: "--:--"} | 開車: ${stop.DepartureTime ?: "--:--"}"
+            drawContext.canvas.nativeCanvas.drawText(
+                timeText,
+                lineX + 25.dp.toPx(),
+                stationY - textVerticalOffset + 20.dp.toPx(), // Position below the station name
+                timeTextPaint
             )
         }
 

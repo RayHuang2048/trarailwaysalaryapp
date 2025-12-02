@@ -16,8 +16,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 51
-        versionName = "1.2.2"
+        versionCode = 53
+        versionName = "1.2.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -168,5 +168,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3") // 使用 ViewModelProvider 時需要
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3") // LiveData
 
+    // In-App Updates
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
 }
