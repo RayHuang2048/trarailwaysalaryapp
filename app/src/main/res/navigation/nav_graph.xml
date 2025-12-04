@@ -22,9 +22,9 @@
     <!-- 營運狀態 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
         android:id="@+id/statusDisplayFragment"
-        android:name="com.ray.trarailwaysalaryapp.StatusDisplayFragment"
-        android:label="營運狀態"
-        tools:layout="@layout/fragment_status_display" />
+        android:name="com.ray.trarailwaysalaryapp.ui.TrainStatusFragment"
+        android:label="查詢時刻"
+        tools:layout="@layout/fragment_train_status" />
 
     <!-- 事故回報 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
