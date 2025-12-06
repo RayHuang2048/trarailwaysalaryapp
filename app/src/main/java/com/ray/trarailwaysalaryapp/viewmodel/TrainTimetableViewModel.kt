@@ -142,11 +142,18 @@ class TrainTimetableViewModel(application: Application) : AndroidViewModel(appli
                     val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                     val filteredTimetables = timetables
                         .filter { timetable ->
-                            // 確保 originStopTime 不是 null
-                            val departureTime = timetable.originStopTime?.departureTime ?: return@filter false
+                            val stopTimes = timetable.stopTimes
+                            if (stopTimes.isNullOrEmpty() || stopTimes.size < 2) return@filter false
+                            
+                            // 假設第一個是起程站，最後一個是到達站
+                            val originStop = stopTimes.first()
+                            val departureTime = originStop.departureTime ?: return@filter false
+                            
                             departureTime >= currentTime 
                         }
-                        .sortedBy { it.originStopTime?.departureTime ?: "99:99" }
+                        .sortedBy { 
+                            it.stopTimes?.firstOrNull()?.departureTime ?: "99:99" 
+                        }
                     
                     _odTimetableResults.postValue(filteredTimetables)
                     

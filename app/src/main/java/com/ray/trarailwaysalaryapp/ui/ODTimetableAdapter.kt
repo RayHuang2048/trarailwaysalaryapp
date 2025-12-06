@@ -40,9 +40,11 @@ class ODTimetableAdapter(
         private val routeTextView: TextView = itemView.findViewById(R.id.textview_route)
 
         fun bind(timetable: ODTrainTimetable) {
-            val trainInfo = timetable.dailyTrainInfo
-            val originStop = timetable.originStopTime
-            val destStop = timetable.destinationStopTime
+            val trainInfo = timetable.trainInfo
+            // 假設 stopTimes 包含 [起程站, 到達站]
+            val stopTimes = timetable.stopTimes ?: emptyList()
+            val originStop = stopTimes.firstOrNull()
+            val destStop = if (stopTimes.size >= 2) stopTimes.lastOrNull() else null
 
             // 車次
             trainNoTextView.text = trainInfo?.trainNo ?: "--"
@@ -56,6 +58,7 @@ class ODTimetableAdapter(
             departureTimeTextView.text = departureTime
 
             // 抵達時間
+            // 如果起程和到達站相同，或者只有一個站，顯示到達時間或 --
             val arrivalTime = destStop?.arrivalTime ?: "--:--"
             arrivalTimeTextView.text = arrivalTime
 

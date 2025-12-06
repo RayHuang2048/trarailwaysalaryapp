@@ -4,31 +4,38 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * TDX OD（起迄站）時刻表查詢的回應資料模型
+ * 根據實際 API 回應結構調整
  */
 data class ODTimetableResponse(
-    @SerializedName("TrainTimetables") val trainTimetables: List<ODTrainTimetable>?
+    @SerializedName("TrainTimetables") val trainTimetables: List<ODTrainTimetable>?,
+    @SerializedName("TrainDate") val trainDate: String?
 )
 
 /**
  * OD 查詢的列車時刻表詳情
+ * 注意：API 實際回傳的是 TrainInfo 和 StopTimes，而不是 DailyTrainInfo
  */
 data class ODTrainTimetable(
-    @SerializedName("TrainDate") val trainDate: String?,        // 列車運行日期
-    @SerializedName("DailyTrainInfo") val dailyTrainInfo: DailyTrainInfo?,  // 列車基本資訊
-    @SerializedName("OriginStopTime") val originStopTime: ODStopTime?,      // 起程站資訊
-    @SerializedName("DestinationStopTime") val destinationStopTime: ODStopTime?  // 到達站資訊
+    @SerializedName("TrainInfo") val trainInfo: TrainInfoData?,
+    @SerializedName("StopTimes") val stopTimes: List<ODStopTime>?
 )
 
 /**
  * 列車基本資訊
  */
-data class DailyTrainInfo(
-    @SerializedName("TrainNo") val trainNo: String,            // 列車號碼
-    @SerializedName("Direction") val direction: Int?,          // 行駛方向 (0: 順行, 1: 逆行)
-    @SerializedName("TrainTypeName") val trainTypeName: ODNameType?,  // 列車類型名稱
-    @SerializedName("TripLine") val tripLine: Int?,            // 山海線 (0: 不經山海線, 1: 山線, 2: 海線)
-    @SerializedName("StartingStationName") val startingStationName: ODNameType?, // 列車起點站
-    @SerializedName("EndingStationName") val endingStationName: ODNameType?      // 列車終點站
+data class TrainInfoData(
+    @SerializedName("TrainNo") val trainNo: String?,
+    @SerializedName("Direction") val direction: Int?,
+    @SerializedName("TrainTypeID") val trainTypeID: String?,
+    @SerializedName("TrainTypeCode") val trainTypeCode: String?,
+    @SerializedName("TrainTypeName") val trainTypeName: ODNameType?,
+    @SerializedName("TripHeadSign") val tripHeadSign: String?,
+    @SerializedName("StartingStationID") val startingStationID: String?,
+    @SerializedName("StartingStationName") val startingStationName: ODNameType?,
+    @SerializedName("EndingStationID") val endingStationID: String?,
+    @SerializedName("EndingStationName") val endingStationName: ODNameType?,
+    @SerializedName("TripLine") val tripLine: Int?,
+    @SerializedName("Note") val note: String?
 )
 
 /**
@@ -43,8 +50,10 @@ data class ODNameType(
  * OD 查詢的停靠站時間資訊
  */
 data class ODStopTime(
-    @SerializedName("StationID") val stationID: String,
+    @SerializedName("StopSequence") val stopSequence: Int?,
+    @SerializedName("StationID") val stationID: String?,
     @SerializedName("StationName") val stationName: ODNameType?,
-    @SerializedName("ArrivalTime") val arrivalTime: String?,   // 抵達時間
-    @SerializedName("DepartureTime") val departureTime: String? // 發車時間
+    @SerializedName("ArrivalTime") val arrivalTime: String?,
+    @SerializedName("DepartureTime") val departureTime: String?,
+    @SerializedName("SuspendedFlag") val suspendedFlag: Int?
 )
