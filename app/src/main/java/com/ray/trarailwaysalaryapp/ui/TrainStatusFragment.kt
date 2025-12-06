@@ -27,6 +27,8 @@ class TrainStatusFragment : Fragment() {
     private lateinit var errorMessageTextView: TextView
     private lateinit var trainRouteComposeView: ComposeView
 
+    private var allStations: List<com.ray.trarailwaysalaryapp.data.Station> = emptyList()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,6 +52,12 @@ class TrainStatusFragment : Fragment() {
             Log.d(TAG, "查詢按鈕被點擊，列車號碼: $trainNo")
             viewModel.queryTrainLiveStatus(trainNo) // 這個呼叫現在也會觸發時刻表查詢
         }
+
+        // 觀察與儲存所有車站資料
+        viewModel.allStations.observe(viewLifecycleOwner, Observer { stations ->
+            allStations = stations
+            Log.d(TAG, "已更新所有車站列表，共 ${stations.size} 站")
+        })
 
         // 觀察列車動態 LiveData 的變化
         viewModel.trainLiveData.observe(viewLifecycleOwner, Observer { trainList ->
@@ -79,7 +87,7 @@ class TrainStatusFragment : Fragment() {
 
                 // 更新 ComposeView
                 val stopTimes = viewModel.trainTimetableLiveData.value ?: emptyList()
-                updateTrainRouteView(stopTimes, train.StationName?.zhTw)
+                updateTrainRouteView(stopTimes, train)
             } else {
                 resultTextView.text = "未找到列車動態資訊。"
                 updateTrainRouteView(emptyList(), null)
@@ -102,7 +110,7 @@ class TrainStatusFragment : Fragment() {
                 }
                 // 更新 ComposeView
                 val train = viewModel.trainLiveData.value?.firstOrNull()
-                updateTrainRouteView(stopTimes, train?.StationName?.zhTw)
+                updateTrainRouteView(stopTimes, train)
             } else {
                 timetableSection.append("\n--- 未找到列車時刻表資訊 ---")
                 updateTrainRouteView(emptyList(), null)
@@ -127,10 +135,53 @@ class TrainStatusFragment : Fragment() {
         return view
     }
 
-    private fun updateTrainRouteView(stops: List<StopTime>, currentStationName: String?) {
+    private fun updateTrainRouteView(stops: List<StopTime>, trainInfo: com.ray.trarailwaysalaryapp.data.TrainLiveInfo?) {
+        val position = calculateTrainPosition(stops, trainInfo)
         trainRouteComposeView.setContent {
-            TrainRouteLine(stops = stops, currentStationName = currentStationName)
+            TrainRouteLine(stops = stops, currentPosition = position)
         }
+    }
+
+    private fun calculateTrainPosition(stops: List<StopTime>, trainInfo: com.ray.trarailwaysalaryapp.data.TrainLiveInfo?): Float? {
+        if (trainInfo == null) return null
+        val currentID = trainInfo.StationID ?: return null
+
+        // 1. 嘗試直接在停靠站列表中尋找
+        val stopIndex = stops.indexOfFirst { it.StationID == currentID }
+        if (stopIndex != -1) {
+            val status = trainInfo.TrainStationStatus ?: 0
+            var pos = stopIndex.toFloat()
+            // 狀態偏移 (1: 進站中, 2: 離站中)
+            if (status == 1 && stopIndex > 0) pos -= 0.5f
+            if (status == 2 && stopIndex < stops.size - 1) pos += 0.5f
+            return pos
+        }
+
+        // 2. 如果不在停靠站中，使用 allStations 進行插值判斷
+        if (allStations.isEmpty()) return null
+
+        val currentGlobalIndex = allStations.indexOfFirst { it.stationID == currentID }
+        if (currentGlobalIndex == -1) return null // 當前車站也不在總列表中 (罕見)
+
+        for (i in 0 until stops.size - 1) {
+            val stopA = stops[i]
+            val stopB = stops[i+1]
+
+            val globalA = allStations.indexOfFirst { it.stationID == stopA.StationID }
+            val globalB = allStations.indexOfFirst { it.stationID == stopB.StationID }
+
+            if (globalA != -1 && globalB != -1) {
+                val minIndex = minOf(globalA, globalB)
+                val maxIndex = maxOf(globalA, globalB)
+
+                // 判斷是否在 A 和 B 之間
+                if (currentGlobalIndex > minIndex && currentGlobalIndex < maxIndex) {
+                    return i.toFloat() + 0.5f
+                }
+            }
+        }
+
+        return null
     }
 
     override fun onDestroyView() {

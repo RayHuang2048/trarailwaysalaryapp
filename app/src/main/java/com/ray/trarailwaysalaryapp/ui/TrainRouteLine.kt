@@ -23,7 +23,7 @@ import com.ray.trarailwaysalaryapp.data.StopTime
 @Composable
 fun TrainRouteLine(
     stops: List<StopTime>,
-    currentStationName: String?,
+    currentPosition: Float?, // 改為接收計算好的浮點數位置 (例如 2.5 表示在第2和第3站中間)
     modifier: Modifier = Modifier
 ) {
     if (stops.isEmpty()) return
@@ -44,7 +44,9 @@ fun TrainRouteLine(
         stopSpacing * (stops.size - 1).coerceAtLeast(0).toFloat() +
                 topPadding +
                 bottomPadding
-    Canvas(modifier = modifier.fillMaxWidth().height(totalHeight)) {
+    Canvas(modifier = modifier
+        .fillMaxWidth()
+        .height(totalHeight)) {
         val lineX = 60.dp.toPx() // X position for the vertical line
 
         // Draw the vertical line
@@ -101,13 +103,14 @@ fun TrainRouteLine(
             )
         }
 
-        // Find the current station's index and draw the train icon
-        val currentStopIndex = stops.indexOfFirst { it.StationName.zhTw == currentStationName }
-        if (trainIconBitmap != null && currentStopIndex != -1) {
-            val trainY = topPadding.toPx() + currentStopIndex * stopSpacing.toPx()
+        // 繪製列車位置
+        if (currentPosition != null && trainIconBitmap != null) {
+            // 計算 Y 座標：起始 Padding + (索引位置 * 間距)
+            val trainY = topPadding.toPx() + currentPosition * stopSpacing.toPx()
+            
             val iconSize = 36.dp.toPx()
 
-            // Draw the train icon, centered over the current station's Y coordinate
+            // Draw the train icon
             drawImage(
                 image = trainIconBitmap,
                 topLeft = Offset(lineX - iconSize / 2, trainY - iconSize / 2),
