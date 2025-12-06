@@ -60,8 +60,8 @@ class TrainStatusFragment : Fragment() {
                 val train = trainList[0] // 假設我們只顯示第一筆列車的資訊
                 val statusText = buildString {
                     append("列車號碼: ${train.TrainNo}\n")
-                    append("車種: ${train.TrainTypeName.Zh_tw} (${train.TrainTypeName.En})\n")
-                    append("目前車站: ${train.StationName?.Zh_tw ?: "站間行駛"}\n")
+                    append("車種: ${train.TrainTypeName.zhTw} (${train.TrainTypeName.en})\n")
+                    append("目前車站: ${train.StationName?.zhTw ?: "站間行駛"}\n")
                     append("誤點時間: ${train.DelayTime} 分鐘\n")
                     append("狀態: ")
                     when (train.TrainStationStatus) {
@@ -79,7 +79,7 @@ class TrainStatusFragment : Fragment() {
 
                 // 更新 ComposeView
                 val stopTimes = viewModel.trainTimetableLiveData.value ?: emptyList()
-                updateTrainRouteView(stopTimes, train.StationName?.Zh_tw)
+                updateTrainRouteView(stopTimes, train.StationName?.zhTw)
             } else {
                 resultTextView.text = "未找到列車動態資訊。"
                 updateTrainRouteView(emptyList(), null)
@@ -96,13 +96,13 @@ class TrainStatusFragment : Fragment() {
                 timetableSection.append("\n--- 列車時刻表 ---\n")
                 for (stop in stopTimes) {
                     timetableSection.append("站序: ${stop.Sequence}, ")
-                    timetableSection.append("車站: ${stop.StationName.Zh_tw} (${stop.StationName.En}), ")
+                    timetableSection.append("車站: ${stop.StationName.zhTw} (${stop.StationName.en}), ")
                     timetableSection.append("抵達: ${stop.ArrivalTime ?: "N/A"}, ") // 如果為 null 顯示 N/A
                     timetableSection.append("出發: ${stop.DepartureTime ?: "N/A"}\n") // 如果為 null 顯示 N/A
                 }
                 // 更新 ComposeView
                 val train = viewModel.trainLiveData.value?.firstOrNull()
-                updateTrainRouteView(stopTimes, train?.StationName?.Zh_tw)
+                updateTrainRouteView(stopTimes, train?.StationName?.zhTw)
             } else {
                 timetableSection.append("\n--- 未找到列車時刻表資訊 ---")
                 updateTrainRouteView(emptyList(), null)

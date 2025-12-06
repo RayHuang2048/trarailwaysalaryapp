@@ -85,7 +85,7 @@ fun TrainRouteLine(
 
             // Draw station name
             drawContext.canvas.nativeCanvas.drawText(
-                stop.StationName.Zh_tw,
+                stop.StationName.zhTw,
                 lineX + 25.dp.toPx(), // Position text to the right of the line
                 stationY - textVerticalOffset, // Vertically center the text
                 textPaint
@@ -102,7 +102,7 @@ fun TrainRouteLine(
         }
 
         // Find the current station's index and draw the train icon
-        val currentStopIndex = stops.indexOfFirst { it.StationName.Zh_tw == currentStationName }
+        val currentStopIndex = stops.indexOfFirst { it.StationName.zhTw == currentStationName }
         if (trainIconBitmap != null && currentStopIndex != -1) {
             val trainY = topPadding.toPx() + currentStopIndex * stopSpacing.toPx()
             val iconSize = 36.dp.toPx()

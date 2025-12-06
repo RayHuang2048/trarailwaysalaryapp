@@ -12,6 +12,12 @@
         android:label="列車動態"
         tools:layout="@layout/fragment_train_status" />
 
+    <fragment
+        android:id="@+id/trainTimetableFragment"
+        android:name="com.ray.trarailwaysalaryapp.ui.TrainTimetableFragment"
+        android:label="時刻查詢"
+        tools:layout="@layout/fragment_train_timetable" />
+
     <!-- 您的薪資計算 Fragment 目的地 (修正路徑，假設在主套件下) -->
     <fragment
         android:id="@+id/salaryCalculatorFragment"

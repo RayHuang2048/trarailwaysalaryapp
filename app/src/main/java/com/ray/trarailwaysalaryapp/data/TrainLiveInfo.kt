@@ -3,15 +3,6 @@ package com.ray.trarailwaysalaryapp.data
 import com.google.gson.annotations.SerializedName
 
 /**
- * 用於表示名稱的通用型態 (中文/英文)。
- * TDX API 中許多名稱字段都包含中文 (Zh_tw) 和英文 (En) 兩種語言。
- */
-data class NameType(
-    @SerializedName("Zh_tw") val Zh_tw: String, // 中文名稱
-    @SerializedName("En") val En: String // 英文名稱
-)
-
-/**
  * TDX API 查詢結果的通用包裝模型。
  * 大部分 TDX API 的回應會將實際的資料列表包裝在一個 JSON 物件中。
  * 這個類別是一個泛型類別，`T` 代表實際資料列表中的元素類型。
@@ -53,9 +44,9 @@ data class TrainLiveInfo(
     @SerializedName("TrainNo") val TrainNo: String, // 列車號碼 (例如: "110")
     @SerializedName("TrainTypeID") val TrainTypeID: String, // 列車車種代碼 (例如: "110M")
     @SerializedName("TrainTypeCode") val TrainTypeCode: String, // 列車車種代碼 (例如: "11")
-    @SerializedName("TrainTypeName") val TrainTypeName: NameType, // 列車車種名稱 (例如: "自強(3000)", "區間車")
+    @SerializedName("TrainTypeName") val TrainTypeName: StationName, // 列車車種名稱 (例如: "自強(3000)", "區間車")
     @SerializedName("StationID") val StationID: String?, // 目前所在的車站代碼 (可能為 null，表示列車正在站間行駛)
-    @SerializedName("StationName") val StationName: NameType?, // 目前所在的車站名稱 (可能為 null)
+    @SerializedName("StationName") val StationName: StationName?, // 目前所在的車站名稱 (可能為 null)
     @SerializedName("TrainStationStatus") val TrainStationStatus: Int?, // 列車車站狀態 (例如 2: 離站)
     @SerializedName("DelayTime") val DelayTime: Int, // 誤點時間 (分鐘，正值表示誤點，0 表示準點或提早)
     @SerializedName("UpdateTime") val UpdateTime: String // 資料更新時間 (ISO 8601 格式，例如 "2025-07-25T07:34:10+08:00")

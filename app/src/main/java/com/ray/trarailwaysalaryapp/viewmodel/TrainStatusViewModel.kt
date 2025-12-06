@@ -1,18 +1,14 @@
 package com.ray.trarailwaysalaryapp.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.ray.trarailwaysalaryapp.data.TDXAccessToken
-import com.ray.trarailwaysalaryapp.data.TdxApiResponse
-import com.ray.trarailwaysalaryapp.data.TrainLiveInfo
-import com.ray.trarailwaysalaryapp.data.TrainTimetableResponse // 導入新的時刻表回應資料類別
-import com.ray.trarailwaysalaryapp.data.TrainTimetableDetail // 導入時刻表詳細資料類別
-import com.ray.trarailwaysalaryapp.data.StopTime // 導入停靠站資料類別
+import com.ray.trarailwaysalaryapp.api.TdxApiService
+import com.ray.trarailwaysalaryapp.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -20,15 +16,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
-
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.text.SimpleDateFormat // 用於日期格式化
-import java.util.Date // 用於獲取當前日期
-import java.util.Locale // 用於地區設定
+import java.io.File
 import java.util.concurrent.TimeUnit
 
-class TrainStatusViewModel : ViewModel() {
+class TrainStatusViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "TrainStatusViewModel"
 
@@ -36,9 +29,7 @@ class TrainStatusViewModel : ViewModel() {
     private val TDX_CLIENT_SECRET = "7573bc0e-4e64-499e-9d0a-91899ef7b298"
 
     private val httpClient = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
+        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
@@ -49,68 +40,50 @@ class TrainStatusViewModel : ViewModel() {
     private val _trainLiveData = MutableLiveData<List<TrainLiveInfo>>()
     val trainLiveData: LiveData<List<TrainLiveInfo>> = _trainLiveData
 
-    // 新增 LiveData 用於向 UI 發送列車時刻表資料列表
     private val _trainTimetableLiveData = MutableLiveData<List<StopTime>>()
     val trainTimetableLiveData: LiveData<List<StopTime>> = _trainTimetableLiveData
+
+    private val _allStations = MutableLiveData<List<Station>>()
+    val allStations: LiveData<List<Station>> = _allStations
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
     private var accessToken: TDXAccessToken? = null
+    private var tokenFetchTime: Long = 0L
 
-    private val TDX_AUTH_BASE_URL = "https://tdx.transportdata.tw/"
-    private val TDX_DATA_BASE_URL = "https://tdx.transportdata.tw/api/basic/"
-
-    private val tdxApiService: com.ray.trarailwaysalaryapp.api.TdxApiService
-    private val authApiService: com.ray.trarailwaysalaryapp.api.TdxApiService
+    private val tdxApiService: TdxApiService
 
     init {
-        val dataRetrofit = Retrofit.Builder()
-            .baseUrl(TDX_DATA_BASE_URL)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://tdx.transportdata.tw/api/basic/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build()
-        tdxApiService = dataRetrofit.create(com.ray.trarailwaysalaryapp.api.TdxApiService::class.java)
-
-        val authRetrofit = Retrofit.Builder()
-            .baseUrl(TDX_AUTH_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        authApiService = authRetrofit.create(com.ray.trarailwaysalaryapp.api.TdxApiService::class.java)
+        tdxApiService = retrofit.create(TdxApiService::class.java)
 
         viewModelScope.launch(Dispatchers.IO) {
             getAccessToken()
+            fetchAllStations()
         }
     }
 
-    /**
-     * 負責向 TDX 認證服務發送請求，獲取 Access Token。
-     * TDX API 需要 OAuth 2.0 Client Credentials 認證流程。
-     * @return 成功獲取則回傳 Access Token 字串，否則回傳 null。
-     */
     private suspend fun getAccessToken(): String? {
         Log.d(TAG, "嘗試獲取 Access Token...")
         val url = "https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token"
         val formBody = "grant_type=client_credentials&client_id=$TDX_CLIENT_ID&client_secret=$TDX_CLIENT_SECRET"
             .toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
+        val request = Request.Builder().url(url).post(formBody).build()
 
         return try {
             val response = httpClient.newCall(request).execute()
             val responseBodyString = response.body?.string()
-            Log.d(TAG, "獲取 Access Token 回應碼: ${response.code}")
-            Log.d(TAG, "獲取 Access Token 回應內容: $responseBodyString")
-
             if (response.isSuccessful) {
-                responseBodyString?.let { responseBody ->
-                    val token = gson.fromJson(responseBody, TDXAccessToken::class.java)
+                responseBodyString?.let {
+                    val token = gson.fromJson(it, TDXAccessToken::class.java)
                     accessToken = token
+                    tokenFetchTime = System.currentTimeMillis()
                     Log.d(TAG, "Access Token 獲取成功！")
-                    _errorMessage.postValue("")
                     token.access_token
                 }
             } else {
@@ -127,14 +100,9 @@ class TrainStatusViewModel : ViewModel() {
         }
     }
 
-    /**
-     * 根據列車號碼查詢台鐵列車的即時動態資訊。
-     * 如果 Access Token 過期或無效，會嘗試重新獲取並重試查詢。
-     * @param trainNo 要查詢的列車號碼。
-     */
     fun queryTrainLiveStatus(trainNo: String) {
-        _trainLiveData.postValue(emptyList<TrainLiveInfo>())
-        _trainTimetableLiveData.postValue(emptyList()) // 清空時刻表數據
+        _trainLiveData.postValue(emptyList())
+        _trainTimetableLiveData.postValue(emptyList())
         _errorMessage.postValue("")
 
         if (trainNo.isBlank()) {
@@ -144,8 +112,7 @@ class TrainStatusViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             var currentToken = accessToken?.access_token
-
-            if (currentToken == null || (accessToken?.fetch_time ?: 0L) + (accessToken?.expires_in ?: 0L) * 1000L < System.currentTimeMillis()) {
+            if (currentToken == null || (tokenFetchTime + ((accessToken?.expires_in ?: 0L) * 1000L)) < System.currentTimeMillis()) {
                 Log.d(TAG, "Access Token 不存在或已過期，嘗試重新獲取...")
                 currentToken = getAccessToken()
             }
@@ -155,8 +122,6 @@ class TrainStatusViewModel : ViewModel() {
                 return@launch
             }
 
-            Log.d(TAG, "使用 Access Token 查詢列車動態...")
-
             try {
                 val response = tdxApiService.getTrainLiveInfo(
                     authorization = "Bearer $currentToken",
@@ -164,24 +129,11 @@ class TrainStatusViewModel : ViewModel() {
                     format = "JSON"
                 )
 
-                Log.d(TAG, "查詢列車動態回應碼: ${response.code()}")
-                Log.d(TAG, "查詢列車動態回應訊息: ${response.message()}")
-
-
                 if (response.isSuccessful) {
                     val apiResponse = response.body()
-
-                    Log.d(TAG, "解析後的 apiResponse: $apiResponse")
                     val trains = apiResponse?.TrainLiveBoards
-                    Log.d(TAG, "解析後的 trains 列表: $trains")
-
-                    _trainLiveData.postValue(trains ?: emptyList<TrainLiveInfo>())
-                    _errorMessage.postValue("")
-
-                    if (!trains.isNullOrEmpty()) {
-                        Log.d(TAG, "列車動態查詢成功，找到 ${trains.size} 筆資料。")
-                    } else {
-                        Log.d(TAG, "未找到列車 ${trainNo} 的即時動態資訊。")
+                    _trainLiveData.postValue(trains ?: emptyList())
+                    if (trains.isNullOrEmpty()) {
                         _errorMessage.postValue("未找到列車 ${trainNo} 的即時動態資訊。")
                     }
                 } else {
@@ -189,41 +141,23 @@ class TrainStatusViewModel : ViewModel() {
                     val errorMsg = "查詢列車動態失敗: HTTP ${response.code()} - ${response.message()} - ${errorBodyString ?: "無錯誤內容"}"
                     Log.e(TAG, errorMsg)
                     _errorMessage.postValue(errorMsg)
-
-                    if (response.code() == 401) {
-                        Log.w(TAG, "Access Token 可能過期或無效，嘗試重新獲取並重試。")
-                        getAccessToken()
-                        if (accessToken != null) {
-                            queryTrainLiveStatus(trainNo)
-                        } else {
-                            _errorMessage.postValue("TDX 認證過期或無效，無法查詢。請檢查憑證。")
-                            _trainLiveData.postValue(emptyList<TrainLiveInfo>())
-                        }
-                    }
                 }
             } catch (e: Exception) {
                 val errorMsg = "查詢列車動態時發生網路錯誤: ${e.message}"
                 Log.e(TAG, errorMsg, e)
                 _errorMessage.postValue(errorMsg)
-                _trainLiveData.postValue(emptyList<TrainLiveInfo>())
             }
-
-            // 無論即時動態查詢成功與否，都嘗試查詢時刻表
+            
             queryTrainTimetable(trainNo)
         }
     }
 
-    /**
-     * 根據列車號碼查詢台鐵列車的時刻表資訊。
-     * @param trainNo 要查詢的列車號碼。
-     */
     private suspend fun queryTrainTimetable(trainNo: String) {
         Log.d(TAG, "嘗試查詢列車時刻表。列車號碼: $trainNo")
-        var currentToken = accessToken?.access_token
+        val currentToken = accessToken?.access_token
 
         if (currentToken == null) {
             Log.e(TAG, "無法獲取存取令牌，無法查詢列車時刻表。")
-            _trainTimetableLiveData.postValue(emptyList()) // 清空時刻表數據
             return
         }
 
@@ -231,25 +165,18 @@ class TrainStatusViewModel : ViewModel() {
             val response = tdxApiService.getTrainTimetable(
                 authorization = "Bearer $currentToken",
                 trainNo = trainNo,
-                top = 30, // Explicitly pass the top parameter
+                top = 30,
                 format = "JSON"
             )
-
-            Log.d(TAG, "查詢列車時刻表回應碼: ${response.code()}")
-            Log.d(TAG, "查詢列車時刻表回應訊息: ${response.message()}")
 
             if (response.isSuccessful) {
                 val apiResponse = response.body()
                 val timetableDetails = apiResponse?.TrainTimetables
-
                 if (!timetableDetails.isNullOrEmpty()) {
-                    // 假設我們只關心找到的第一個列車時刻表（因為通常只有一個匹配的）
                     val stopTimes = timetableDetails[0].StopTimes
                     _trainTimetableLiveData.postValue(stopTimes)
-                    Log.d(TAG, "列車時刻表查詢成功，找到 ${stopTimes.size} 個停靠站。")
                 } else {
                     _trainTimetableLiveData.postValue(emptyList())
-                    Log.d(TAG, "未找到列車 ${trainNo} 的時刻表資訊。")
                 }
             } else {
                 val errorBodyString = response.errorBody()?.string()
@@ -261,6 +188,55 @@ class TrainStatusViewModel : ViewModel() {
             val errorMsg = "查詢列車時刻表時發生網路錯誤: ${e.message}"
             Log.e(TAG, errorMsg, e)
             _trainTimetableLiveData.postValue(emptyList())
+        }
+    }
+
+    fun fetchAllStations() {
+        viewModelScope.launch(Dispatchers.IO) {
+            var currentToken = accessToken?.access_token
+            if (currentToken == null || (tokenFetchTime + ((accessToken?.expires_in ?: 0L) * 1000L)) < System.currentTimeMillis()) {
+                Log.d(TAG, "Access Token for stations not available or expired, getting new one.")
+                currentToken = getAccessToken()
+            }
+
+            if (currentToken == null) {
+                _errorMessage.postValue("Cannot get access token, unable to fetch station list.")
+                return@launch
+            }
+
+            try {
+                val response = tdxApiService.getAllStations(
+                    authorization = "Bearer $currentToken",
+                    format = "JSON"
+                )
+
+                if (response.isSuccessful) {
+                    val stationResponse = response.body()
+                    val stations = stationResponse?.stations ?: emptyList()
+                    _allStations.postValue(stations)
+                    saveStationsToJson(stationResponse)
+                } else {
+                    val errorBodyString = response.errorBody()?.string()
+                    val errorMsg = "Failed to fetch station list: HTTP ${response.code()} - ${response.message()} - ${errorBodyString ?: "No error body"}"
+                    Log.e(TAG, errorMsg)
+                    _errorMessage.postValue(errorMsg)
+                }
+            } catch (e: Exception) {
+                val errorMsg = "Network error when fetching station list: ${e.message}"
+                Log.e(TAG, errorMsg, e)
+                _errorMessage.postValue(errorMsg)
+            }
+        }
+    }
+
+    private fun saveStationsToJson(stationResponse: StationResponse?) {
+        if (stationResponse == null) return
+        val context = getApplication<Application>().applicationContext
+        val file = File(context.filesDir, "stations.json")
+        try {
+            file.writeText(gson.toJson(stationResponse))
+        } catch (e: Exception) {
+            Log.e(TAG, "無法儲存車站資料", e)
         }
     }
 }

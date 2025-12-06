@@ -7,6 +7,11 @@
         android:title="列車動態" />
 
     <item
+        android:id="@+id/trainTimetableFragment"
+        android:icon="@drawable/ic_train"
+        android:title="時刻查詢" />
+
+    <item
         android:id="@+id/salaryCalculatorFragment"
         android:icon="@drawable/ic_salary"
         android:title="薪資" />

@@ -33,7 +33,7 @@ data class TrainTimetableDetail(
  */
 data class StopTime(
     @SerializedName("StationID") val StationID: String, // 車站代碼
-    @SerializedName("StationName") val StationName: NameType, // 車站名稱 (包含中英文)
+    @SerializedName("StationName") val StationName: StationName, // 車站名稱 (包含中英文)
     @SerializedName("ArrivalTime") val ArrivalTime: String?, // 預計抵達時間 (HH:mm，可能為 null 如果是起點站)
     @SerializedName("DepartureTime") val DepartureTime: String?, // 預計出發時間 (HH:mm，可能為 null 如果是終點站)
     @SerializedName("Sequence") val Sequence: Int // 停靠站的順序

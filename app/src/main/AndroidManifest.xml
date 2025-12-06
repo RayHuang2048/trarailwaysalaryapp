@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.StationSelectionActivity"
+            android:label="選擇車站" />
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">

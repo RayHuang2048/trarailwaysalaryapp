@@ -4,6 +4,7 @@ plugins {
     id("com.google.gms.google-services") // Google Services Plugin for Firebase
     id("org.jetbrains.kotlin.plugin.compose") // 假設這是您專案所需，保留
     id("org.jetbrains.kotlin.kapt") // 支援 Kotlin 註解處理，特別是 Glide
+    id("kotlin-parcelize") // <--- 新增這一行
     // 如果您有使用 Firebase App Distribution，請保留這行：
     id("com.google.firebase.appdistribution") version "4.0.0"
 }
@@ -16,8 +17,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 53
-        versionName = "1.2.4"
+        versionCode = 54
+        versionName = "1.2.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
