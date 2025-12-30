@@ -3,9 +3,9 @@
 // 聲明 Gradle 插件及其版本
 plugins {
     // Android 應用程式插件
-    id("com.android.application") version "8.13.1" apply false
+    id("com.android.application") version "8.13.2" apply false
     // Android 函式庫插件 (如果您有函式庫模組，也可能需要)
-    id("com.android.library") version "8.13.1" apply false
+    id("com.android.library") version "8.13.2" apply false
     // Kotlin Android 插件
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
     // Dagger Hilt 插件

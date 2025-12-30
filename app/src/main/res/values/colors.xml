@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Light Theme Colors -->
+    
+    <!-- Primary Brand Color (台鐵金黃色) -->
     <color name="md_theme_light_primary">#FFB951</color>
     <color name="md_theme_light_onPrimary">#452B00</color>
     <color name="md_theme_light_primaryContainer">#FFDDB3</color>
     <color name="md_theme_light_onPrimaryContainer">#2D1600</color>
+    
+    <!-- Secondary Colors -->
     <color name="md_theme_light_secondary">#DDC2A1</color>
     <color name="md_theme_light_onSecondary">#3E2D16</color>
     <color name="md_theme_light_secondaryContainer">#F9E0BB</color>
     <color name="md_theme_light_onSecondaryContainer">#251A04</color>
+    
+    <!-- Background & Surface -->
     <color name="md_theme_light_background">#FFFBFF</color>
     <color name="md_theme_light_onBackground">#1C1B1F</color>
     <color name="md_theme_light_surface">#FFFBFF</color>
     <color name="md_theme_light_onSurface">#1C1B1F</color>
+    
+    <!-- Error Colors -->
     <color name="md_theme_light_error">#B3261E</color>
     <color name="md_theme_light_onError">#FFFFFF</color>
     <color name="md_theme_light_errorContainer">#F9DEDC</color>
     <color name="md_theme_light_onErrorContainer">#410E0B</color>
 
-    <color name="your_primary_color">#FFB951</color>
-    <color name="your_on_primary_color">#452B00</color>
-    <color name="app_background_green_darker">#33691E</color> <color name="app_text_blue_lighter">#BBDEFB</color> <color name="md_theme_dark_primary">#FFB951</color>
+    <!-- Dark Theme Colors -->
+    <color name="md_theme_dark_primary">#FFB951</color>
     <color name="md_theme_dark_onPrimary">#452B00</color>
     <color name="md_theme_dark_primaryContainer">#633F00</color>
     <color name="md_theme_dark_onPrimaryContainer">#FFDDB3</color>
@@ -35,7 +43,18 @@
     <color name="md_theme_dark_onError">#601410</color>
     <color name="md_theme_dark_errorContainer">#8C1D18</color>
     <color name="md_theme_dark_onErrorContainer">#F9DEDC</color>
-
-    ---
-
-    <color name="train_status_background_white">#FFFFFF</color> <color name="train_status_text_dark_blue">#000080</color>    <color name="train_status_text_medium_blue">#1A237E</color>  <color name="train_status_hint_light_blue">#90CAF9</color>  <color name="train_status_button_background_blue">#2196F3</color> <color name="train_status_button_text_white">#FFFFFF</color> </resources>
+    
+    <!-- Legacy/Alias Colors -->
+    <color name="your_primary_color">#FFB951</color>
+    <color name="your_on_primary_color">#452B00</color>
+    
+    <!-- Custom App Colors -->
+    <color name="train_status_background_white">#FFFFFF</color>
+    <color name="train_status_text_dark_blue">#000080</color>
+    <color name="train_status_text_medium_blue">#1A237E</color>
+    <color name="train_status_hint_light_blue">#90CAF9</color>
+    <color name="train_status_button_background_blue">#2196F3</color>
+    <color name="train_status_button_text_white">#FFFFFF</color>
+    <color name="app_background_green_darker">#E8F5E9</color>
+    <color name="app_text_blue_lighter">#0D47A1</color>
+</resources>

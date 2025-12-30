@@ -91,6 +91,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved theme before calling super.onCreate()
+        ThemePreferences.applyTheme(this)
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

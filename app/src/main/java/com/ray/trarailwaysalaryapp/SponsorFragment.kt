@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -29,7 +31,9 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
 
     private lateinit var buyAppButton: Button
     private lateinit var btnShareViaLine: Button
-    private lateinit var btnContactAuthor: Button // 聯絡作者 Email 按鈕
+    private lateinit var btnContactAuthor: Button
+    private lateinit var switchDarkMode: SwitchMaterial
+    private lateinit var tvThemeStatus: TextView
 
     private lateinit var billingClient: BillingClient
     private var productDetails: ProductDetails? = null // 用於儲存產品詳情
@@ -66,6 +70,26 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
             Log.d(TAG, "btnContactAuthor 被點擊。啟動 Email 應用程式...")
             sendEmailToAuthor()
         }
+        
+        // Initialize theme switcher
+        switchDarkMode = view.findViewById(R.id.switchDarkMode)
+        tvThemeStatus = view.findViewById(R.id.tvThemeStatus)
+        
+        // Set initial state
+        updateThemeUI()
+        
+        // Theme switch listener
+        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            val newMode = if (isChecked) {
+                ThemePreferences.MODE_DARK
+            } else {
+                ThemePreferences.MODE_LIGHT
+            }
+            ThemePreferences.saveThemeMode(requireContext(), newMode)
+            ThemePreferences.applyTheme(requireContext())
+            updateThemeUI()
+            Log.d(TAG, "Theme changed to: ${if (isChecked) "Dark" else "Light"}")
+        }
         // --- 結束聯絡作者 Email 按鈕 ---
 
         // 初始化 BillingClient
@@ -82,6 +106,25 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated: SponsorFragment 視圖已建立。")
+    }
+    
+    private fun updateThemeUI() {
+        val currentMode = ThemePreferences.getThemeMode(requireContext())
+        when (currentMode) {
+            ThemePreferences.MODE_DARK -> {
+                switchDarkMode.isChecked = true
+                tvThemeStatus.text = "深色模式"
+            }
+            ThemePreferences.MODE_LIGHT -> {
+                switchDarkMode.isChecked = false
+                tvThemeStatus.text = "淺色模式"
+            }
+            else -> {
+                val isDark = ThemePreferences.isDarkMode(requireContext())
+                switchDarkMode.isChecked = isDark
+                tvThemeStatus.text = "跟隨系統設定"
+            }
+        }
     }
 
     private fun connectToGooglePlayBilling() {
