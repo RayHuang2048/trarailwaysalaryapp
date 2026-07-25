@@ -106,6 +106,16 @@ class MainActivity : AppCompatActivity() {
         // 這會確保即使令牌刷新，最新的令牌也能被上傳到 Firestore
         FirebaseTokenManager.saveDeviceTokenToFirestore()
 
+        // 訂閱事故通報主題，以便接收來自 Cloud Functions 的通知
+        FirebaseMessaging.getInstance().subscribeToTopic("accident_reports")
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to accident_reports"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe failed"
+                }
+                Log.d("FCM_Subscription", msg)
+            }
+
         // 處理 Android 13 (API 33) 及更高版本的通知權限請求
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // 檢查是否已經有通知權限

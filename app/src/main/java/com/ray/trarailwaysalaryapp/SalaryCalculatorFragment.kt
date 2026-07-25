@@ -155,6 +155,11 @@ class SalaryCalculatorFragment : Fragment() {
     private fun updateShiftInputVisibility(shiftType: String) {
         when (shiftType) {
             "AB班" -> {
+                tvReplaceThreeShiftDaysLabel.visibility = View.VISIBLE
+                replaceThreeShiftDaysEditText.visibility = View.VISIBLE
+                tvHolidayOvertimeDaysLabel.visibility = View.VISIBLE
+                holidayOvertimeDaysEditText.visibility = View.VISIBLE
+                
                 tvDayShiftDaysLabel.visibility = View.GONE
                 dayShiftDaysEditText.visibility = View.GONE
                 tvNightShiftDaysLabel.visibility = View.GONE
@@ -169,6 +174,11 @@ class SalaryCalculatorFragment : Fragment() {
                 nightShiftAllowancePerDayEditText.visibility = View.GONE
             }
             "三班制" -> {
+                tvReplaceThreeShiftDaysLabel.visibility = View.GONE
+                replaceThreeShiftDaysEditText.visibility = View.GONE
+                tvHolidayOvertimeDaysLabel.visibility = View.GONE
+                holidayOvertimeDaysEditText.visibility = View.GONE
+                
                 tvDayShiftDaysLabel.visibility = View.VISIBLE
                 dayShiftDaysEditText.visibility = View.VISIBLE
                 tvNightShiftDaysLabel.visibility = View.VISIBLE
@@ -183,6 +193,11 @@ class SalaryCalculatorFragment : Fragment() {
                 nightShiftAllowancePerDayEditText.visibility = View.VISIBLE
             }
             else -> {
+                tvReplaceThreeShiftDaysLabel.visibility = View.GONE
+                replaceThreeShiftDaysEditText.visibility = View.GONE
+                tvHolidayOvertimeDaysLabel.visibility = View.GONE
+                holidayOvertimeDaysEditText.visibility = View.GONE
+                
                 tvDayShiftDaysLabel.visibility = View.GONE
                 dayShiftDaysEditText.visibility = View.GONE
                 tvNightShiftDaysLabel.visibility = View.GONE
@@ -257,9 +272,9 @@ class SalaryCalculatorFragment : Fragment() {
             return
         }
 
-        // 獲取 AB 班相關天數 (直接讀取為 BigDecimal)
-        val replaceThreeShiftDays = replaceThreeShiftDaysEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
-        val holidayOvertimeDays = holidayOvertimeDaysEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+        // 獲取 AB 班相關天數 (根據可見性判斷是否讀取，否則預設為BigDecimal.ZERO)
+        val replaceThreeShiftDays = if (replaceThreeShiftDaysEditText.visibility == View.VISIBLE) replaceThreeShiftDaysEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO else BigDecimal.ZERO
+        val holidayOvertimeDays = if (holidayOvertimeDaysEditText.visibility == View.VISIBLE) holidayOvertimeDaysEditText.text.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO else BigDecimal.ZERO
 
         // 獲取三班制相關天數 (ToInt/ToBigDecimal，根據可見性判斷是否讀取，否則預設為0/BigDecimal.ZERO)
         val dayShiftDays = if (dayShiftDaysEditText.visibility == View.VISIBLE) dayShiftDaysEditText.text.toString().toIntOrNull() ?: 0 else 0

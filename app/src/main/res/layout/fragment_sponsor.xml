@@ -96,7 +96,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="如果您覺得本應用程式對您有幫助，\n歡迎透過以下方式支持我們：\n\n- 透過 Google Play 贊助支持 (51元)\n- 推薦給您的朋友\n- 在應用商店留下好評\n\n您的支持是我們持續改進的動力！"
+                android:text="如果您覺得本應用程式對您有幫助，\n歡迎透過以下方式支持我們：\n\n- 透過 Google Play 贊助支持 (250元)\n- 推薦給您的朋友\n- 在應用商店留下好評\n\n您的支持是我們持續改進的動力！"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:lineSpacingExtra="4dp"
@@ -106,7 +106,7 @@
                 android:id="@+id/buyAppButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="贊助應用程式 (NT$51)"
+                android:text="贊助應用程式 (NT$250)"
                 android:padding="12dp"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"

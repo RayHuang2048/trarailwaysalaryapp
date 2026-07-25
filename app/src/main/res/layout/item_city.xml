@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="18sp"
-        android:textColor="@android:color/white"
+        android:textColor="?android:attr/textColorPrimary"
         android:text="城市名稱" />
 
     <TextView
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="#CCCCCC"
+        android:textColor="?android:attr/textColorSecondary"
         android:text="0 個車站" />
 
     <ImageView

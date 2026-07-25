@@ -71,4 +71,20 @@ interface TdxApiService {
         @Path("TrainDate") trainDate: String,
         @Query("\$format") format: String = "JSON"
     ): Response<ODTimetableResponse>
+
+    /**
+     * 查詢兩站間的票價資訊 (v2 版本)。
+     * @param authorization OAuth 2.0 Access Token (Bearer token)。
+     * @param originStationId 起程站 ID。
+     * @param destinationStationId 到達站 ID。
+     * @param format 回應資料格式，預設為 JSON。
+     * @return 包含 ODFare 列表的 Response。
+     */
+    @GET("v3/Rail/TRA/ODFare/{OriginStationID}/to/{DestinationStationID}")
+    suspend fun getODFare(
+        @Header("Authorization") authorization: String,
+        @Path("OriginStationID") originStationId: String,
+        @Path("DestinationStationID") destinationStationId: String,
+        @Query("\$format") format: String = "JSON"
+    ): Response<com.ray.trarailwaysalaryapp.data.ODFareResponse>
 }

@@ -20,6 +20,7 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
@@ -37,9 +38,10 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
 
     private lateinit var billingClient: BillingClient
     private var productDetails: ProductDetails? = null // 用於儲存產品詳情
+    private var isBillingProcessBusy = false // 用於防止重複點擊或重複啟動購買流程
 
     // 【重要】請確保這個 PRODUCT_ID 與您在 Google Play Console 中設定的「可重複消費」產品 ID 完全一致。
-    private val PRODUCT_ID = "ray_trarailway_salary_app_sponsorship_49ntd_consumable"
+    private val PRODUCT_ID = "sponsor_250"
 
     // 【重要】請在這裡定義作者的 Email 地址
     private val AUTHOR_EMAIL = "rayhuang2048@gmail.com" // <--- *** 請務必在這裡修改為您實際的 Email 地址！ ***
@@ -95,7 +97,7 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
         // 初始化 BillingClient
         billingClient = BillingClient.newBuilder(requireContext())
             .setListener(this)
-            .enablePendingPurchases()
+            .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
             .build()
 
         connectToGooglePlayBilling()
@@ -165,13 +167,17 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
             .setProductList(productList)
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, productsDetailsList ->
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
+            val productsDetailsList = queryProductDetailsResult.productDetailsList
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productsDetailsList.isNotEmpty()) {
                 productDetails = productsDetailsList[0]
                 Log.i(TAG, "queryProductDetails: 產品詳情獲取成功。價格: ${productDetails?.oneTimePurchaseOfferDetails?.formattedPrice}")
                 activity?.runOnUiThread {
                     buyAppButton.text = "贊助應用程式 (${productDetails?.oneTimePurchaseOfferDetails?.formattedPrice})"
-                    buyAppButton.isEnabled = true
+                    // 只有在不在購買流程中時才啟用按鈕
+                    if (!isBillingProcessBusy) {
+                        buyAppButton.isEnabled = true
+                    }
                 }
             } else {
                 Log.e(TAG, "queryProductDetails: 無法獲取產品資訊: ${billingResult.responseCode} - ${billingResult.debugMessage}")
@@ -184,7 +190,17 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
     }
 
     private fun launchPurchaseFlow() {
+        if (isBillingProcessBusy) {
+            Log.w(TAG, "launchPurchaseFlow: 購買流程正在進行中，忽略此次點擊。")
+            return
+        }
+
         productDetails?.let {
+            isBillingProcessBusy = true
+            activity?.runOnUiThread {
+                buyAppButton.isEnabled = false
+            }
+
             val productDetailsParamsList = listOf(
                 BillingFlowParams.ProductDetailsParams.newBuilder()
                     .setProductDetails(it)
@@ -206,20 +222,28 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
         Log.d(TAG, "onPurchasesUpdated: 結果碼: ${billingResult.responseCode}, 除錯訊息: ${billingResult.debugMessage}")
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
-                Log.d(TAG, "onPurchasesUpdated: 正在處理購買: ${purchase.orderId}")
+                Log.d(TAG, "onPurchasesUpdated: 正在處理購買 - 產品: ${purchase.products}, 訂單 ID: ${purchase.orderId}")
                 handlePurchase(purchase)
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             Log.d(TAG, "onPurchasesUpdated: 購買被使用者取消。")
             Toast.makeText(requireContext(), "購買已取消", Toast.LENGTH_SHORT).show()
+            isBillingProcessBusy = false
+            activity?.runOnUiThread {
+                buyAppButton.isEnabled = true
+            }
         } else {
             Log.e(TAG, "onPurchasesUpdated: 購買發生錯誤: ${billingResult.responseCode} - ${billingResult.debugMessage}")
             Toast.makeText(requireContext(), "購買發生錯誤: ${billingResult.debugMessage}", Toast.LENGTH_LONG).show()
+            isBillingProcessBusy = false
+            activity?.runOnUiThread {
+                buyAppButton.isEnabled = true
+            }
         }
     }
 
     private fun handlePurchase(purchase: Purchase) {
-        Log.d(TAG, "handlePurchase: 購買狀態: ${purchase.purchaseState}，訂單 ID: ${purchase.orderId}")
+        Log.d(TAG, "handlePurchase: 產品: ${purchase.products}, 狀態: ${purchase.purchaseState}, 訂單 ID: ${purchase.orderId}")
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
             Toast.makeText(requireContext(), "感謝您的購買！", Toast.LENGTH_LONG).show()
             Log.i(TAG, "handlePurchase: 購買成功！訂單 ID: ${purchase.orderId}")
@@ -245,6 +269,7 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
         } else if (purchase.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE) {
             Log.w(TAG, "handlePurchase: 購買處於未指定狀態，訂單 ID: ${purchase.orderId}")
             Toast.makeText(requireContext(), "購買狀態不明", Toast.LENGTH_LONG).show()
+            isBillingProcessBusy = false
             activity?.runOnUiThread {
                 buyAppButton.isEnabled = true
             }
@@ -277,6 +302,7 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "consumePurchase: 購買成功消費，代幣: $purchaseToken")
                 Toast.makeText(requireContext(), "贊助已成功！感謝！", Toast.LENGTH_SHORT).show()
+                isBillingProcessBusy = false
                 activity?.runOnUiThread {
                     buyAppButton.text = "贊助應用程式 (${productDetails?.oneTimePurchaseOfferDetails?.formattedPrice})"
                     buyAppButton.isEnabled = true
@@ -284,6 +310,10 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
             } else {
                 Log.e(TAG, "consumePurchase: 消費購買失敗: ${billingResult.responseCode} - ${billingResult.debugMessage}")
                 Toast.makeText(requireContext(), "贊助消費失敗: ${billingResult.debugMessage}", Toast.LENGTH_LONG).show()
+                isBillingProcessBusy = false
+                activity?.runOnUiThread {
+                    buyAppButton.isEnabled = true
+                }
             }
         }
     }
@@ -297,7 +327,7 @@ class SponsorFragment : Fragment(), PurchasesUpdatedListener {
                 Log.d(TAG, "queryPurchases: INAPP 歷史購買查詢成功。找到 ${purchaseList.size} 筆購買。")
                 for (purchase in purchaseList) {
                     if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                        Log.d(TAG, "queryPurchases: 找到已購買項目: ${purchase.orderId}。已確認: ${purchase.isAcknowledged}")
+                        Log.d(TAG, "queryPurchases: 找到已購買項目 - 產品: ${purchase.products}, 訂單 ID: ${purchase.orderId}。已確認: ${purchase.isAcknowledged}")
                         if (!purchase.isAcknowledged) {
                             Log.d(TAG, "queryPurchases: 找到未確認的購買: ${purchase.orderId}，正在確認並消費。")
                             acknowledgePurchase(purchase)

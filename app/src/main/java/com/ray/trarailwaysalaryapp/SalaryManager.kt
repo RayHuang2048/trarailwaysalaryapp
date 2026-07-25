@@ -225,14 +225,17 @@ class SalaryManager(private val context: Context) {
             .add(dutySalaryAllowance)
             .add(talentRetentionAllowance)
 
-        // 計算日薪和時薪 (基於 monthlyBaseSalaryComponent，不包含加班費和夜點費)
+        // 計算日薪和時薪 (基於 monthlyBaseSalaryComponent，但不包含留才職務津貼)
         // 假設每月工作30天，每天8小時
         val daysInMonth = BigDecimal("30")
         val hoursInDay = BigDecimal("8")
 
+        // 計算用於時薪/日薪的基礎金額 (扣除留才職務津貼)
+        val wageCalculationBase = monthlyBaseSalaryComponent.subtract(talentRetentionAllowance)
+
         // 使用較高的精度進行除法，並四捨五入到小數點後兩位
-        // 注意：這裡的 dailyWage 和 hourlyWage 如果 monthlyBaseSalaryComponent 是零，結果也會是零
-        val dailyWage = monthlyBaseSalaryComponent.divide(daysInMonth, 2, RoundingMode.HALF_UP)
+        // 注意：這裡的 dailyWage 和 hourlyWage 如果 wageCalculationBase 是零，結果也會是零
+        val dailyWage = wageCalculationBase.divide(daysInMonth, 2, RoundingMode.HALF_UP)
         val hourlyWage = dailyWage.divide(hoursInDay, 2, RoundingMode.HALF_UP)
 
         Log.d("SalaryManager", "${personnelType.displayName} 基礎月薪組件=$monthlyBaseSalaryComponent, 日薪=$dailyWage, 時薪=$hourlyWage")

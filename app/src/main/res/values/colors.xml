@@ -57,4 +57,6 @@
     <color name="train_status_button_text_white">#FFFFFF</color>
     <color name="app_background_green_darker">#E8F5E9</color>
     <color name="app_text_blue_lighter">#0D47A1</color>
+    <color name="page_background_light_green">#E8F5E9</color>
+    <color name="page_background_dark_green">#1B5E20</color>
 </resources>

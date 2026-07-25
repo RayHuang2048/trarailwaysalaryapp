@@ -1,89 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:fillViewport="true"
+    android:background="@color/page_background_dark_green"
     tools:context=".ui.TrainTimetableFragment">
 
-    <!-- 起程站 -->
-    <Button
-        android:id="@+id/button_start_station"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="起程站"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/text_start_station"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="尚未選擇"
-        android:textSize="18sp"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toEndOf="@+id/button_start_station"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button_start_station"
-        app:layout_constraintBottom_toBottomOf="@+id/button_start_station" />
+        <!-- === 列車動態查詢部分 (上部分) === -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="列車動態查詢"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"/>
 
-    <!-- 到達站 -->
-    <Button
-        android:id="@+id/button_arrival_station"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="到達站"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_start_station" />
+        <EditText
+            android:id="@+id/trainNoEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="輸入列車號碼 (例如: 110)"
+            android:inputType="number"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#B0BEC5"
+            android:layout_marginTop="8dp"/>
 
-    <TextView
-        android:id="@+id/text_arrival_station"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="尚未選擇"
-        android:textSize="18sp"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toEndOf="@+id/button_arrival_station"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button_arrival_station"
-        app:layout_constraintBottom_toBottomOf="@+id/button_arrival_station" />
+        <Button
+            android:id="@+id/queryStatusButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="查詢列車即時動態"
+            android:textColor="#3F51B5"
+            android:backgroundTint="@android:color/white"
+            android:layout_marginTop="8dp"/>
 
-    <!-- 查詢按鈕 -->
-    <Button
-        android:id="@+id/button_query_timetable"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="查詢時刻表"
-        app:layout_constraintTop_toBottomOf="@id/button_arrival_station"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/trainRouteComposeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
 
-    <!-- 顯示查詢結果的 RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_timetable"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/button_query_timetable"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/statusResultTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="列車動態資訊將顯示在此"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:padding="8dp" />
 
-    <!-- 載入中指示器 -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/button_query_timetable"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/statusErrorMessageTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF8A80"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#40FFFFFF"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- === 時刻表查詢部分 (下部分) === -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="起訖站時刻查詢"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <Button
+                android:id="@+id/button_start_station"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="起程站" />
+            <TextView
+                android:id="@+id/text_start_station"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="尚未選擇"
+                android:textSize="18sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+            <Button
+                android:id="@+id/button_arrival_station"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="到達站" />
+            <TextView
+                android:id="@+id/text_arrival_station"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="尚未選擇"
+                android:textSize="18sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_query_timetable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="查詢時刻表" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_timetable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:nestedScrollingEnabled="false" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

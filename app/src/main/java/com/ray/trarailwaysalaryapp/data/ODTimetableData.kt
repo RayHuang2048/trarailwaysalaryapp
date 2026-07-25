@@ -17,7 +17,8 @@ data class ODTimetableResponse(
  */
 data class ODTrainTimetable(
     @SerializedName("TrainInfo") val trainInfo: TrainInfoData?,
-    @SerializedName("StopTimes") val stopTimes: List<ODStopTime>?
+    @SerializedName("StopTimes") val stopTimes: List<ODStopTime>?,
+    var fare: Int? = null // 新增：用於存儲媒合後的票價
 )
 
 /**
@@ -39,7 +40,32 @@ data class TrainInfoData(
 )
 
 /**
- * 站名類型（包含中英文）
+ * TDX V3 ODFare 回應包裝
+ */
+data class ODFareResponse(
+    @SerializedName("ODFares") val odFares: List<ODFare>?
+)
+
+/**
+ * 票價資料 (V3 結構)
+ */
+data class ODFare(
+    @SerializedName("OriginStationID") val originStationID: String?,
+    @SerializedName("DestinationStationID") val destinationStationID: String?,
+    @SerializedName("TrainType") val trainType: Int?, // 新增：用於區分車種的整數 ID
+    @SerializedName("TravelDistance") val travelDistance: Double?, // 新增：用於判斷最短路徑票價
+    @SerializedName("Fares") val fares: List<Fare>?
+)
+
+data class Fare(
+    @SerializedName("TicketType") val ticketType: Int?,
+    @SerializedName("FareClass") val fareClass: Int?,
+    @SerializedName("CabinClass") val cabinClass: Int?,
+    @SerializedName("Price") val price: Int?
+)
+
+/**
+ * 車次基本資訊 (中英名稱)
  */
 data class ODNameType(
     @SerializedName("Zh_tw") val zhTw: String?,

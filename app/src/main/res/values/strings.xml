@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TRA Railway Salary App</string>
+    <string name="app_name">TRA salary</string>
     <string name="select_employee_type_prompt">選擇人員類型</string>
     <string name="select_officer_position_prompt">選擇職員職位</string>
     <string name="select_shift_type_prompt">選擇班別</string>

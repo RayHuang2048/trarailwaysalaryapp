@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="4dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
     app:cardBackgroundColor="#2D2D2D">
@@ -15,12 +17,9 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- 車次和車種 -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/textview_train_no"
@@ -29,36 +28,54 @@
                 android:text="1234"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
 
             <TextView
-                android:id="@+id/textview_train_type"
+                android:id="@+id/textview_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="自強號"
-                android:textSize="14sp"
-                android:textColor="#4CAF50"
-                android:background="#333333"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:text="$ 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFD600"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
 
             <TextView
                 android:id="@+id/textview_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1時30分"
+                android:layout_toStartOf="@id/textview_price"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="1h 0m"
                 android:textSize="14sp"
-                android:textColor="#AAAAAA" />
+                android:textColor="#AAAAAA"
+                android:layout_centerVertical="true" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/textview_train_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/textview_train_no"
+                android:layout_toStartOf="@id/textview_duration"
+                android:layout_marginStart="12dp"
+                android:text="TZE-CHIANG"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:textColor="#4CAF50"
+                android:background="#333333"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_centerVertical="true" />
 
-        <!-- 時間資訊 -->
+        </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,7 +93,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="出發"
+                    android:text="DEP"
                     android:textSize="12sp"
                     android:textColor="#888888" />
 
@@ -94,10 +111,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="→"
+                android:text="->"
                 android:textSize="24sp"
                 android:textColor="#666666"
-                android:layout_marginHorizontal="16dp" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -109,7 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="抵達"
+                    android:text="ARR"
                     android:textSize="12sp"
                     android:textColor="#888888" />
 
@@ -126,13 +144,12 @@
 
         </LinearLayout>
 
-        <!-- 起訖站 -->
         <TextView
             android:id="@+id/textview_route"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="台北 → 高雄"
+            android:text="START -> END"
             android:textSize="12sp"
             android:textColor="#888888"
             android:gravity="center" />

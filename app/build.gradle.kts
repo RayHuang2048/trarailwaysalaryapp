@@ -17,8 +17,8 @@ android {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
         targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 57
-        versionName = "1.2.8"
+        versionCode = 64
+        versionName = "1.3.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,8 +60,7 @@ android {
 // *** 新增：強制解析策略以確保 Google Play Billing Library 版本 ***
 configurations.all {
     resolutionStrategy {
-        // 強制所有對 'com.android.billingclient:billing' 的依賴都使用 7.0.0 版本
-        force("com.android.billingclient:billing:7.0.0")
+        force("com.android.billingclient:billing:8.0.0")
     }
 }
 // *** 新增結束 ***

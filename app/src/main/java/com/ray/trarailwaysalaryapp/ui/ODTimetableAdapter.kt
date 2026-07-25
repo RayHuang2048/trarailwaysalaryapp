@@ -38,6 +38,7 @@ class ODTimetableAdapter(
         private val arrivalTimeTextView: TextView = itemView.findViewById(R.id.textview_arrival_time)
         private val durationTextView: TextView = itemView.findViewById(R.id.textview_duration)
         private val routeTextView: TextView = itemView.findViewById(R.id.textview_route)
+        private val priceTextView: TextView = itemView.findViewById(R.id.textview_price)
 
         fun bind(timetable: ODTrainTimetable) {
             val trainInfo = timetable.trainInfo
@@ -70,6 +71,14 @@ class ODTimetableAdapter(
             val startStation = trainInfo?.startingStationName?.zhTw ?: ""
             val endStation = trainInfo?.endingStationName?.zhTw ?: ""
             routeTextView.text = "$startStation → $endStation"
+
+            // 票價
+            if (timetable.fare != null) {
+                priceTextView.visibility = View.VISIBLE
+                priceTextView.text = "$ ${timetable.fare}"
+            } else {
+                priceTextView.visibility = View.GONE
+            }
         }
 
         private fun calculateDuration(departure: String, arrival: String): String {
