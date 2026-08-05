@@ -11,14 +11,14 @@ plugins {
 
 android {
     namespace = "com.ray.trarailwaysalaryapp"
-    compileSdk = 35 // 使用最新的編譯 SDK
+    compileSdk = 36 // Android 16
 
     defaultConfig {
         applicationId = "com.ray.trarailwaysalaryapp"
         minSdk = 26
-        targetSdk = 35 // <--- 修正：與 compileSdk 保持一致
-        versionCode = 64
-        versionName = "1.3.1"
+        targetSdk = 36 // Android 16
+        versionCode = 65
+        versionName = "1.3.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

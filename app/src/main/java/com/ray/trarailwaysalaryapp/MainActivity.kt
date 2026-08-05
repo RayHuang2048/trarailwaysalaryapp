@@ -12,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment // 導航組件
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.model.AppUpdateType
@@ -162,8 +163,8 @@ class MainActivity : AppCompatActivity() {
                 // Request the update.
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
-                    AppUpdateType.FLEXIBLE,
                     this,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
                     MY_REQUEST_CODE
                 )
             }
@@ -201,8 +202,8 @@ class MainActivity : AppCompatActivity() {
                     // If an in-app update is already running, resume the update.
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
-                        AppUpdateType.IMMEDIATE,
                         this,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
                         MY_REQUEST_CODE
                     )
                 }
